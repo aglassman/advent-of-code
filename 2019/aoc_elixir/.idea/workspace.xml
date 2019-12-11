@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d81b1735-ad70-43ef-b499-9e2a508189a7" name="Default Changelist" comment="" />
+    <list default="true" id="d81b1735-ad70-43ef-b499-9e2a508189a7" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/lib/aoc_elixir_3.ex" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/aoc_3_tests.exs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/aoc_elixir.iml" beforeDir="false" afterPath="$PROJECT_DIR$/aoc_elixir.iml" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
   <component name="ProjectId" id="1UnQANyMVuNV0892ZN3kzqqTTn5" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
@@ -21,7 +31,7 @@
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.last.edited" value="Facets" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
@@ -43,7 +53,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Elixir Mix ExUnit.Mix ExUnit test/aoc_2_test.exs:28">
+  <component name="RunManager" selected="Elixir Mix ExUnit.Mix ExUnit test/aoc_2_test.exs">
     <configuration default="true" type="Applet">
       <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
       <method v="2">
@@ -121,12 +131,19 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Elixir Mix ExUnit.Mix ExUnit test/aoc_2_test.exs" />
+      <item itemvalue="Elixir Mix ExUnit.Mix ExUnit test/aoc_2_test.exs:16" />
+      <item itemvalue="Elixir Mix ExUnit.Mix ExUnit test/aoc_2_test.exs:22" />
+      <item itemvalue="Elixir Mix ExUnit.Mix ExUnit test/aoc_2_test.exs:28" />
+      <item itemvalue="Elixir Mix ExUnit.Mix ExUnit test/aoc_2_test.exs:43" />
+    </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Elixir Mix ExUnit.Mix ExUnit test/aoc_2_test.exs" />
         <item itemvalue="Elixir Mix ExUnit.Mix ExUnit test/aoc_2_test.exs:28" />
         <item itemvalue="Elixir Mix ExUnit.Mix ExUnit test/aoc_2_test.exs:43" />
         <item itemvalue="Elixir Mix ExUnit.Mix ExUnit test/aoc_2_test.exs:16" />
-        <item itemvalue="Elixir Mix ExUnit.Mix ExUnit test/aoc_2_test.exs" />
         <item itemvalue="Elixir Mix ExUnit.Mix ExUnit test/aoc_2_test.exs:22" />
       </list>
     </recent_temporary>
@@ -143,12 +160,28 @@
       <updated>1575989734640</updated>
       <workItem from="1575989736127" duration="63000" />
       <workItem from="1575989810348" duration="2550000" />
-      <workItem from="1575993136551" duration="14667000" />
+      <workItem from="1575993136551" duration="18954000" />
+      <workItem from="1576068995148" duration="330000" />
+      <workItem from="1576069346891" duration="445000" />
+      <workItem from="1576069828496" duration="470000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
