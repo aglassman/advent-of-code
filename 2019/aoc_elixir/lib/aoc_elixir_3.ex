@@ -37,21 +37,29 @@ defmodule AocElixir3 do
 
       current_position = expanded_wire |> List.first()
 
-      comprehension = for i <- 1..wire_instruction.distance, do: i
+      start = cond do
+        wire_instruction.distance < 0 -> -1
+        wire_instruction.distance > 0 -> 1
+        wire_instruction.distance == 0 -> 0
+      end
+
+      comprehension = for i <- start..wire_instruction.distance, do: i
 
       comprehension = Enum.reverse(comprehension)
 
       wire_segment = comprehension
       |> Enum.map(&( current_position |> Map.update(wire_instruction.direction, :oops, fn pos -> pos + &1 end) ))
 
-      wire_segment ++ expanded_wire
+      wire_segment ++ expanded_wire #|> IO.inspect()
     end
 
 
     wire_instructions
     |> Enum.map(&AocElixir3.parseWireInstruction/1)
+    #|> IO.inspect()
     |> Enum.reduce(expanded_wire, expand_wire)
-
+    #|> IO.inspect()
+    |> Enum.reverse()
   end
 
   def parseWireInstruction(instructionString) do
@@ -71,12 +79,12 @@ defmodule AocElixir3 do
   end
 
   @doc """
-  Returns all wire intersections.
-  [
-    %{ location: %{ x: 2, y: 5 }, wires: [1,4] },
-    %{ location: %{ x: 5, y: 9 }, wires: [2,8,9] },
-    %{ location: %{ x: 1, y: 1 }, wires: [1,4] }
-  ]
+  Returns all wire intersections mapped by location.
+  %{
+    %{ x: 2, y: 5 } => [1,4] },
+    %{ x: 5, y: 9 } => [2,8,9] },
+    %{ x: 1, y: 1 } => [1,4] }
+  }
   """
   def intersections(grid) do
     # Build up a map, where the key is the location, and the value is a list of wires that occupy
@@ -94,8 +102,29 @@ defmodule AocElixir3 do
 
     end
 
-    Enum.reduce(grid, %{ %{x: 0, y: 0} => [] }, segment_accumulator)
+    isIntersection = fn segment ->
+      wire_count = segment |> elem(1) |> Enum.count()
+      wire_count > 1
+    end
 
+    grid
+    |> Enum.reduce(%{ %{x: 0, y: 0} => [] }, segment_accumulator)
+    |> Enum.filter(isIntersection)
+    |> Enum.reduce(%{}, &( Map.put(&2, &1 |> elem(0), &1 |> elem(1))))
+
+  end
+
+  @doc """
+  Determine closest intersection to provided point. Default is origin %{ x: 0, y: 0}
+  Retuns a tuple of location, and distance
+  { %{x: 3, y: 3}, 6 }
+  """
+  def closestIntersectionTo(intersections, point \\ %{ x: 0, y: 0}) do
+    intersections
+    |> Map.keys()
+    |> Enum.filter(&( point != &1 ))
+    |> Enum.map(&( { &1, manhattanDistance(&1, point) } ))
+    |> Enum.min_by(&( &1 |> elem(1)  ))
   end
 
   @doc """
