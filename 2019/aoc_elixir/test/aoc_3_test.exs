@@ -9,13 +9,11 @@ defmodule AocDay3ElixirTest do
     |> AocElixir3.createGrid()
     |> AocElixir3.intersections()
     |> AocElixir3.closestIntersectionTo()
-    |> IO.inspect()
     |> elem(1)
-    |> IO.inspect()
 
   end
 
-  test "example 1" do
+  test "Part 1: Example 1" do
 
     wires = [
       ["R75","D30","R83","U83","L12","D49","R71","U7","L72"],
@@ -26,13 +24,12 @@ defmodule AocDay3ElixirTest do
     |> AocElixir3.createGrid()
     |> AocElixir3.intersections()
     |> AocElixir3.closestIntersectionTo()
-    |> IO.inspect()
     |> elem(1)
 
     assert 159 == closest_intersection
   end
 
-  test "example 2" do
+  test "Part 1: Example 2" do
 
     wires = [
       ["R98","U47","R26","D63","R33","U87","L62","D20","R33","U53","R51"],
@@ -43,10 +40,24 @@ defmodule AocDay3ElixirTest do
     |> AocElixir3.createGrid()
     |> AocElixir3.intersections()
     |> AocElixir3.closestIntersectionTo()
-    |> IO.inspect()
     |> elem(1)
 
     assert 135 == closest_intersection
+  end
+
+  test "Part 2: Example 1" do
+    wires = [
+      ["R75","D30","R83","U83","L12","D49","R71","U7","L72"],
+      ["U62","R66","U55","R34","D71","R55","D58","R83"]
+    ]
+
+    steps = wires
+      |> AocElixir3.createGrid()
+      |> AocElixir3.intersections(true)
+      |> AocElixir3.lowestCombinedSegmentLength()
+
+    assert 610 = steps
+
   end
 
   test "expand wire instructions" do
@@ -55,38 +66,38 @@ defmodule AocDay3ElixirTest do
     assert [
              %{wire: 2, x: 0, y: 0},
 
-             %{wire: 2, x: 0, y: 1},
-             %{wire: 2, x: 0, y: 2},
-             %{wire: 2, x: 0, y: 3},
-             %{wire: 2, x: 0, y: 4},
+             %{wire: 2, segment: 0, x: 0, y: 1},
+             %{wire: 2, segment: 0, x: 0, y: 2},
+             %{wire: 2, segment: 0, x: 0, y: 3},
+             %{wire: 2, segment: 0, x: 0, y: 4},
 
-             %{wire: 2, x: 1, y: 4},
-             %{wire: 2, x: 2, y: 4},
-             %{wire: 2, x: 3, y: 4},
+             %{wire: 2, segment: 1, x: 1, y: 4},
+             %{wire: 2, segment: 1, x: 2, y: 4},
+             %{wire: 2, segment: 1, x: 3, y: 4},
 
-             %{wire: 2, x: 3, y: 5},
-             %{wire: 2, x: 3, y: 6},
-             %{wire: 2, x: 3, y: 7},
+             %{wire: 2, segment: 2, x: 3, y: 5},
+             %{wire: 2, segment: 2, x: 3, y: 6},
+             %{wire: 2, segment: 2, x: 3, y: 7},
 
-             %{wire: 2, x: 4, y: 7},
-             %{wire: 2, x: 5, y: 7},
+             %{wire: 2, segment: 3, x: 4, y: 7},
+             %{wire: 2, segment: 3, x: 5, y: 7},
 
-             %{wire: 2, x: 5, y: 6},
-             %{wire: 2, x: 5, y: 5},
-             %{wire: 2, x: 5, y: 4},
-             %{wire: 2, x: 5, y: 3},
+             %{wire: 2, segment: 4, x: 5, y: 6},
+             %{wire: 2, segment: 4, x: 5, y: 5},
+             %{wire: 2, segment: 4, x: 5, y: 4},
+             %{wire: 2, segment: 4, x: 5, y: 3},
 
-             %{wire: 2, x: 4, y: 3},
-             %{wire: 2, x: 3, y: 3},
-             %{wire: 2, x: 2, y: 3}
+             %{wire: 2, segment: 5, x: 4, y: 3},
+             %{wire: 2, segment: 5, x: 3, y: 3},
+             %{wire: 2, segment: 5, x: 2, y: 3}
            ] == wire_path
   end
 
   test "parse direction and distance" do
-    assert "R33" |> AocElixir3.parseWireInstruction == %{ direction: :x, distance: 33 }
-    assert "L15" |> AocElixir3.parseWireInstruction == %{ direction: :x, distance: -15 }
-    assert "U33" |> AocElixir3.parseWireInstruction == %{ direction: :y, distance: 33 }
-    assert "D14" |> AocElixir3.parseWireInstruction == %{ direction: :y, distance: -14 }
+    assert {"R33", 0} |> AocElixir3.parseWireInstruction == %{ direction: :x, distance: 33, segment: 0 }
+    assert {"L15", 1} |> AocElixir3.parseWireInstruction == %{ direction: :x, distance: -15, segment: 1 }
+    assert {"U33", 2} |> AocElixir3.parseWireInstruction == %{ direction: :y, distance: 33, segment: 2 }
+    assert {"D14", 3} |> AocElixir3.parseWireInstruction == %{ direction: :y, distance: -14, segment: 3 }
   end
 
   test "manhattan distance" do
@@ -104,15 +115,15 @@ defmodule AocDay3ElixirTest do
 
     grid =   [
       %{ x: 0, y: 0, wire: 0 },
-      %{ x: 0, y: 1, wire: 0 },
-      %{ x: 0, y: 2, wire: 0 },
+      %{ x: 0, y: 1, wire: 0, segment: 0, length: 1 },
+      %{ x: 0, y: 2, wire: 0, segment: 0, length: 2 },
 
-      %{ x: 0, y: 0, wire: 1 },
-      %{ x: 1, y: 0, wire: 1 },
-      %{ x: 1, y: 1, wire: 1 },
-      %{ x: 1, y: 2, wire: 1 },
-      %{ x: 0, y: 2, wire: 1 },
-      %{ x: 0, y: 3, wire: 1 }
+      %{ x: 0, y: 0, wire: 1, segment: 0, length: 1 },
+      %{ x: 1, y: 0, wire: 1, segment: 0, length: 2 },
+      %{ x: 1, y: 1, wire: 1, segment: 0, length: 3 },
+      %{ x: 1, y: 2, wire: 1, segment: 0, length: 4 },
+      %{ x: 0, y: 2, wire: 1, segment: 0, length: 5 },
+      %{ x: 0, y: 3, wire: 1, segment: 0, length: 6 }
     ]
 
     intersections = grid |> AocElixir3.intersections
@@ -133,15 +144,15 @@ defmodule AocDay3ElixirTest do
 
     assert [
              %{ x: 0, y: 0, wire: 0 },
-             %{ x: 0, y: 1, wire: 0 },
-             %{ x: 0, y: 2, wire: 0 },
+             %{ x: 0, y: 1, wire: 0, segment: 0 },
+             %{ x: 0, y: 2, wire: 0, segment: 1 },
 
              %{ x: 0, y: 0, wire: 1 },
-             %{ x: 1, y: 0, wire: 1 },
-             %{ x: 1, y: 1, wire: 1 },
-             %{ x: 1, y: 2, wire: 1 },
-             %{ x: 0, y: 2, wire: 1 },
-             %{ x: 0, y: 1, wire: 1 }
+             %{ x: 1, y: 0, wire: 1, segment: 0 },
+             %{ x: 1, y: 1, wire: 1, segment: 1 },
+             %{ x: 1, y: 2, wire: 1, segment: 1 },
+             %{ x: 0, y: 2, wire: 1, segment: 2 },
+             %{ x: 0, y: 1, wire: 1, segment: 3 }
            ] == grid
 
   end
