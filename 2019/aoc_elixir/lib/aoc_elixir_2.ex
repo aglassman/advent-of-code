@@ -10,6 +10,8 @@ defmodule AocElixir2 do
       case intOp do
         1 -> :add
         2 -> :multiply
+        3 -> :input
+        4 -> :output
         99 -> :halt
         _ -> :halt
       end
@@ -64,6 +66,8 @@ defmodule AocElixir2 do
     case operation.opcode do
       :halt -> program
       :add -> storeValue(program, operation.addr3, val1 + val2)
+      :input ->
+      :output ->
       :multiply -> storeValue(program, operation.addr3, val1 * val2)
     end
 
