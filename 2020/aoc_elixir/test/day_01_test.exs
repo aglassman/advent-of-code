@@ -23,7 +23,7 @@ defmodule Day01Test do
   end
 
   test "day 01 - part 2" do
-    {factor_1, factor_2, factor_3} = answer = input_to_list(File.read!("input/1.txt"))
+    [{factor_1, factor_2, factor_3} | _] = answer = input_to_list(File.read!("input/1.txt"))
     |> find_sums_3(2020)
 
     IO.inspect("Day 01 Answer - part 2: #{inspect answer} sum: #{factor_1 * factor_2 * factor_3}")
@@ -51,16 +51,13 @@ defmodule Day01Test do
   end
 
   def find_sums_3(input, sum) do
-    try do
-      for {a, ai} <- Enum.with_index(input), {b, bi} <- Enum.with_index(input), {c, ci} <- Enum.with_index(input) do
-        cond do
-          (ai != bi) and (bi != ci) and  ((a + b + c) == sum) -> throw {:found, {a, b, c}}
-          true -> nil
-        end
+    for {a, ai} <- Enum.with_index(input), {b, bi} <- Enum.with_index(input), {c, ci} <- Enum.with_index(input) do
+      cond do
+        (ai != bi) and (bi != ci) and  ((a + b + c) == sum) -> {a, b, c}
+        true -> nil
       end
-    catch
-      {:found, answer} -> answer
     end
+    |> Enum.reject(&is_nil/1)
   end
 
 end
