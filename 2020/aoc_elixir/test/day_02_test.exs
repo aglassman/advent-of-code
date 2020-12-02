@@ -24,7 +24,7 @@ defmodule Day02Test do
 
     valid = input_stream |> Stream.reject(&(match?({:invalid, _}, &1)))
 
-    assert 530 == valid |> Enum.count()
+    assert 660 == valid |> Enum.count()
   end
 
   test "day 2 - part 2" do
@@ -34,7 +34,7 @@ defmodule Day02Test do
 
     valid = input_stream |> Stream.reject(&(match?({:invalid, _}, &1)))
 
-    assert 1000 == valid |> Enum.count()
+    assert 530 == valid |> Enum.count()
   end
 
   @regex ~r/(?<min>[\d]+)-(?<max>[\d]+) (?<char>.+): (?<password>.*)/
@@ -73,7 +73,7 @@ defmodule Day02Test do
     a = Enum.at(graphemes, min - 1) == char
     b = Enum.at(graphemes, max - 1) == char
 
-    if (a || b) && !(a && (a == b)) do
+    if (a || b) && (a != b) do
       {:valid, match}
     else
       {:invalid, match}
