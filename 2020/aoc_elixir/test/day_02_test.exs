@@ -1,7 +1,6 @@
 defmodule Day02Test do
   use ExUnit.Case
   use Bitwise
-  doctest AocElixir
 
   test "example" do
     input = """

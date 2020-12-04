@@ -1,6 +1,5 @@
 defmodule Day01Test do
   use ExUnit.Case
-  doctest AocElixir
 
   test "example" do
     {factor_1, factor_2} = input_to_list(File.read!("input/1.example.txt"))

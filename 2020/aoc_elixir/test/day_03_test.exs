@@ -1,7 +1,5 @@
 defmodule Day03Test do
   use ExUnit.Case
-  use Bitwise
-  doctest AocElixir
 
   @example """
   ..##.......
@@ -45,7 +43,7 @@ defmodule Day03Test do
 
     assert 336 == @slopes
                   |> Enum.map(&(encountered_trees(input, &1)))
-                  |> Enum.reduce(fn x, acc -> x * acc end)
+                  |> Enum.reduce(&*/2)
 
   end
 
@@ -54,7 +52,7 @@ defmodule Day03Test do
 
     assert 2138320800 == @slopes
                   |> Enum.map(&(encountered_trees(input, &1)))
-                  |> Enum.reduce(fn x, acc -> x * acc end)
+                  |> Enum.reduce(&*/2)
 
   end
 
@@ -78,14 +76,10 @@ defmodule Day03Test do
     {map, width, height}
   end
 
-  @tree "#"
 
   def encountered_trees({map, width, height}, {right, down}) do
-    locations_to_check = for i <- 0..(height - 1), do: (i * down * width) + rem(i * right, width)
-
-    locations_to_check
-    |> Enum.map(fn location -> Enum.at(map, location) end)
-    |> Enum.reject(&(&1 != @tree))
+    0..(height - 1)
+    |> Enum.filter(&(Enum.at(map, (&1 * down * width) + rem(&1 * right, width)) == "#"))
     |> Enum.count()
   end
 
