@@ -82,25 +82,29 @@ defmodule Day04Test do
   def count_valid(passports, opts \\ []) do
     passports
     |> Stream.map(fn passport -> Map.take(passport, @required_fields) end)
-    |> Stream.reject(fn passport -> Enum.count(Map.keys(passport)) != Enum.count(@required_fields) end)
-    |> Stream.reject(fn passport -> Keyword.get(opts, :validate_fields, false) && !fields_valid?(passport) end)
+    |> Stream.reject(fn passport ->
+      Enum.count(Map.keys(passport)) != Enum.count(@required_fields)
+    end)
+    |> Stream.reject(fn passport ->
+      Keyword.get(opts, :validate_fields, false) && !fields_valid?(passport)
+    end)
     |> Enum.count()
   end
 
   def val_check(str_value, min, max) do
     int_val = String.to_integer(str_value)
-    int_val >=min && int_val <= max
+    int_val >= min && int_val <= max
   end
 
   def fields_valid?(passport) do
     passport |> Enum.all?(&field_valid?/1)
   end
 
-  def field_valid?({"byr", <<value::binary-size(4)>>}), do: val_check(value, 1920, 2002)
+  def field_valid?({"byr", value}), do: val_check(value, 1920, 2002)
 
-  def field_valid?({"iyr", <<value::binary-size(4)>>}), do: val_check(value, 2010, 2020)
+  def field_valid?({"iyr", value}), do: val_check(value, 2010, 2020)
 
-  def field_valid?({"eyr", <<value::binary-size(4)>>}), do: val_check(value, 2020, 2030)
+  def field_valid?({"eyr", value}), do: val_check(value, 2020, 2030)
 
   def field_valid?({"hgt", value}) do
     case Regex.named_captures(~r/(?<height>[\d]+)(?<unit>in|cm)/, value) do
@@ -112,10 +116,9 @@ defmodule Day04Test do
 
   def field_valid?({"hcl", "#" <> value}), do: Regex.match?(~r/^[0-9a-f]{6}$/, value)
 
-  def field_valid?({"ecl", value}), do: Enum.any?(["amb", "blu", "brn", "gry", "grn", "hzl", "oth"], &(&1 == value))
+  def field_valid?({"ecl", value}), do: value in ~W/amb blu brn gry grn hzl oth/
 
   def field_valid?({"pid", value}), do: Regex.match?(~r/^[0-9]{9}$/, value)
 
   def field_valid?(_), do: false
-
 end

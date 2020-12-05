@@ -11,7 +11,7 @@ defmodule Day02Test do
 
     input_stream = parse_and_validate_input(input, &validate_password_count/1)
 
-    valid = input_stream |> Stream.reject(&(match?({:invalid, _}, &1)))
+    valid = input_stream |> Stream.reject(&match?({:invalid, _}, &1))
 
     assert 2 == valid |> Enum.count()
   end
@@ -21,7 +21,7 @@ defmodule Day02Test do
 
     input_stream = parse_and_validate_input(input, &validate_password_count/1)
 
-    valid = input_stream |> Stream.reject(&(match?({:invalid, _}, &1)))
+    valid = input_stream |> Stream.reject(&match?({:invalid, _}, &1))
 
     assert 660 == valid |> Enum.count()
   end
@@ -31,7 +31,7 @@ defmodule Day02Test do
 
     input_stream = parse_and_validate_input(input, &validate_password_position/1)
 
-    valid = input_stream |> Stream.reject(&(match?({:invalid, _}, &1)))
+    valid = input_stream |> Stream.reject(&match?({:invalid, _}, &1))
 
     assert 530 == valid |> Enum.count()
   end
@@ -42,7 +42,7 @@ defmodule Day02Test do
     string
     |> String.split("\n")
     |> Stream.map(&String.trim/1)
-    |> Stream.map(&(Regex.named_captures(@regex, &1)))
+    |> Stream.map(&Regex.named_captures(@regex, &1))
     |> Stream.reject(&is_nil/1)
     |> Stream.map(fn %{"char" => char, "max" => max, "min" => min, "password" => password} ->
       %{
@@ -56,9 +56,10 @@ defmodule Day02Test do
   end
 
   def validate_password_count(%{char: char, min: min, max: max, password: password} = match) do
-    count = String.graphemes(password)
-    |> Stream.reject(&(char != &1))
-    |> Enum.count()
+    count =
+      String.graphemes(password)
+      |> Stream.reject(&(char != &1))
+      |> Enum.count()
 
     if count >= min && count <= max do
       {:valid, match}
@@ -72,11 +73,10 @@ defmodule Day02Test do
     a = Enum.at(graphemes, min - 1) == char
     b = Enum.at(graphemes, max - 1) == char
 
-    if (a || b) && (a != b) do
+    if (a || b) && a != b do
       {:valid, match}
     else
       {:invalid, match}
     end
   end
-
 end
