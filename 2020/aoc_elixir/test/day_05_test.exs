@@ -14,7 +14,7 @@ defmodule Day05Test do
              File.read!("input/5.txt")
              |> String.split("\n")
              |> Stream.map(&find_seat/1)
-             |> Enum.max_by(fn {row, column, seat_id} -> seat_id end)
+             |> Enum.max_by(fn {_, _, seat_id} -> seat_id end)
              |> elem(2)
   end
 
