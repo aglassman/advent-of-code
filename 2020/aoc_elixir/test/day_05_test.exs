@@ -19,7 +19,7 @@ defmodule Day05Test do
   end
 
   test "day 5 - part 2" do
-    assert 818 ==
+    assert 559 ==
              File.read!("input/5.txt")
              |> String.split("\n")
              |> Stream.map(&find_seat/1)
