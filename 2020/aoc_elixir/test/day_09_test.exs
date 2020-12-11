@@ -29,7 +29,7 @@ defmodule Day09Test do
   end
 
   test "day 9 - part 1" do
-    assert 1492208709 = find_missing(File.read!("input/9.txt"), 25)
+    assert 1_492_208_709 = find_missing(File.read!("input/9.txt"), 25)
   end
 
   test "example - part 2" do
@@ -37,13 +37,13 @@ defmodule Day09Test do
   end
 
   test "day 9 - part 2" do
-    assert 238243506 = find_weakness(File.read!("input/9.txt"), 1492208709)
+    assert 238_243_506 = find_weakness(File.read!("input/9.txt"), 1_492_208_709)
   end
 
   def find_missing(input, preamble_size) do
     to_int_stream(input, preamble_size + 1)
     |> Stream.map(&Enum.reverse/1)
-    |> Enum.find_value(fn  [sum | remaining] ->
+    |> Enum.find_value(fn [sum | remaining] ->
       case find_sums_2(remaining, sum) do
         :not_found -> sum
         _ -> nil
@@ -77,6 +77,7 @@ defmodule Day09Test do
 
   def find_sums_2(input, sum) do
     input = :lists.usort(input)
+
     try do
       for a <- input, b <- input do
         cond do
@@ -84,6 +85,7 @@ defmodule Day09Test do
           true -> nil
         end
       end
+
       :not_found
     catch
       {:found, answer} -> {:found, answer}
