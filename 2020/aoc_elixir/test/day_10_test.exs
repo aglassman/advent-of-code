@@ -15,14 +15,15 @@ defmodule Day10Test do
   end
 
   test "day 10 - part 2" do
-    assert 3022415986688 == part_2(File.read!("input/10.txt"))
+    assert 3_022_415_986_688 == part_2(File.read!("input/10.txt"))
   end
 
   def part_1(input) do
-    %{1 => a, 3 => b} = input
-    |> full_chain()
-    |> jolt_differences()
-    |> jolt_difference_map()
+    %{1 => a, 3 => b} =
+      input
+      |> full_chain()
+      |> jolt_differences()
+      |> jolt_difference_map()
 
     a * b
   end
@@ -64,6 +65,7 @@ defmodule Day10Test do
     Enum.reduce(
       jolt_differences,
       %{},
-      &Map.update(&2, &1, 1, fn a -> a + 1 end))
+      &Map.update(&2, &1, 1, fn a -> a + 1 end)
+    )
   end
 end
