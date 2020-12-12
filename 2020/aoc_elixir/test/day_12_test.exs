@@ -49,7 +49,7 @@ defmodule Day12Test do
   end
 
   def navigate([instruction | instructions], current_position) do
-    navigate(instructions, next_position(current_position, instruction |> IO.inspect()) |> IO.inspect())
+    navigate(instructions, next_position(current_position, instruction))
   end
 
   # shared
