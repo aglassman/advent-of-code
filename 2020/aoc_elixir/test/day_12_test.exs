@@ -60,6 +60,7 @@ defmodule Day12Test do
 
 
   # part 2 calc (waypoint)
+  # These match when the first element of the tuple is a position tuple, and not a direction.
   def next_position({{_,_},_,_} = pos_wp, {rot, deg}) when rot in ["L", "R"] and deg == 0 , do: pos_wp
   def next_position({{_,_} = pos, x, y}, {"L", deg}), do: next_position({pos, -y, x}, {"L", deg - 90})
   def next_position({{_,_} = pos, x, y}, {"R", deg}), do: next_position({pos, y, -x}, {"R", deg - 90})
@@ -69,6 +70,8 @@ defmodule Day12Test do
     next_position({{p_x + wp_x, p_y + wp_y}, wp_x, wp_y}, {"F", val - 1})
 
   # part 1 calc
+  # These match when the first element of the tuple is not a position tuple, but is the
+  # current "facing" direction.
   def next_position({facing, lat, long}, {"L", deg}), do: {rot(facing, "L", deg), lat, long }
   def next_position({facing, lat, long}, {"R", deg}), do: {rot(facing, "R", deg), lat, long}
   def next_position({facing, _, _} = pos, {"F", val}), do: next_position(pos, {facing, val})
