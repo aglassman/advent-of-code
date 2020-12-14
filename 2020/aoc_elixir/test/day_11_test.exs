@@ -139,6 +139,7 @@ defmodule Day11Test do
   """
   def find_stable(map, neighbors) do
     next_iteration = iterate(map, neighbors)
+
     if map == next_iteration do
       map
     else
