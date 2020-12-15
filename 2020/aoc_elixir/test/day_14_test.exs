@@ -32,7 +32,7 @@ defmodule Day13Test do
   end
 
   test "day 14 - part 2" do
-    assert 208 == part_2(File.read!("input/14.txt"))
+    assert 3505392154485 == part_2(File.read!("input/14.txt"))
   end
 
   def part_1(input) do
@@ -42,7 +42,6 @@ defmodule Day13Test do
     |> Enum.reject(&match?({:mask, _}, &1))
     |> Enum.map(fn {_, val} -> val end)
     |> Enum.sum()
-    |> IO.inspect()
   end
 
   def part_2(input) do
@@ -53,7 +52,6 @@ defmodule Day13Test do
     |> Enum.reject(&match?({:mask, _}, &1))
     |> Enum.map(fn {_, val} -> val end)
     |> Enum.sum()
-    |> IO.inspect()
   end
 
   # part 2 run
@@ -64,18 +62,12 @@ defmodule Day13Test do
   end
 
   def run_2([{:mask, _, _, _} = mask | instructions], mem) do
-    IO.inspect(mask)
     run_2(instructions, %{mem | mask: mask})
   end
 
   def run_2([{:assign, location, value} | instructions], %{mask: {:mask, mask, m_or, _}} = mem) do
-
-    m_loc = bor(location, m_or)
-
-    IO.inspect("loc:#{location} m_and:#{m_or} m_loc:#{m_loc}")
-
-    mem = locations(m_loc, mask)
-    |> Enum.reduce(mem, fn loc, mem -> IO.inspect("#{loc}:#{value}"); put_in(mem, ["#{loc}"], value); end)
+    mem = locations(bor(location, m_or), mask)
+    |> Enum.reduce(mem, fn loc, mem -> put_in(mem, ["#{loc}"], value) end)
 
     run_2(instructions, mem)
   end
@@ -105,13 +97,11 @@ defmodule Day13Test do
   end
 
   def run([{:mask, _, _, _} = mask | instructions], mem) do
-    IO.inspect(mask)
     run(instructions, %{mem | mask: mask})
   end
 
   def run([{:assign, location, value} = mask | instructions], %{mask: {_, _, m_and, m_sub}} = mem) do
     output = bor(value, m_and) - band(value, m_sub)
-    IO.inspect([location, value, m_and, m_sub, output])
     run(instructions, put_in(mem, [location], output))
   end
 
