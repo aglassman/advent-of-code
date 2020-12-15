@@ -69,7 +69,7 @@ defmodule Day13Test do
 
   def run_2([{:assign, location, value} | instructions], %{mask: {:mask, mask, m_or, _}} = mem) do
     mem = locations(bor(location, m_or), mask)
-    |> Enum.reduce(mem, fn loc, mem -> put_in(mem, ["#{loc}"], value) end)
+    |> Enum.reduce(mem, fn loc, mem -> put_in(mem, [loc], value) end)
 
     run_2(instructions, mem)
   end
