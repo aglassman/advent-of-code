@@ -47,7 +47,6 @@ defmodule Day13Test do
   def part_2(input) do
     input
     |> parse()
-    #|> Enum.take(2)
     |> run_2()
     |> Enum.reject(&match?({:mask, _}, &1))
     |> Enum.map(fn {_, val} -> val end)
