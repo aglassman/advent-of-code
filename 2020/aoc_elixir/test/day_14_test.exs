@@ -39,15 +39,18 @@ defmodule Day13Test do
     input
     |> parse()
     |> run()
-    |> Enum.reject(&match?({:mask, _}, &1))
-    |> Enum.map(fn {_, val} -> val end)
-    |> Enum.sum()
+    |> sum_memory()
   end
 
   def part_2(input) do
     input
     |> parse()
     |> run_2()
+    |> sum_memory()
+  end
+
+  def sum_memory(mem) do
+    mem
     |> Enum.reject(&match?({:mask, _}, &1))
     |> Enum.map(fn {_, val} -> val end)
     |> Enum.sum()
