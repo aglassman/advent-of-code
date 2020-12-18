@@ -30,7 +30,6 @@ defmodule Day16Test do
   5,14,9
   """
 
-
   test "example - part 1" do
     assert 71 = part_1(@example)
   end
@@ -40,22 +39,22 @@ defmodule Day16Test do
   end
 
   test "example - part 2 - valid tickets" do
-    assert %{valid_tickets: [[7, 3, 47]]} = @example
-      |> parse()
-      |> discard_invalid()
+    assert %{valid_tickets: [[7, 3, 47]]} =
+             @example
+             |> parse()
+             |> discard_invalid()
   end
 
   test "example - part 2 - identified" do
     assert ["row", "class", "seat"] =
-      @example_2
-      |> parse()
-      |> discard_invalid()
-      |> determine_field_order()
+             @example_2
+             |> parse()
+             |> discard_invalid()
+             |> determine_field_order()
   end
 
-
   test "day 16 - part 2" do
-    assert 3709435214239 = part_2(File.read!("input/16.txt"))
+    assert 3_709_435_214_239 = part_2(File.read!("input/16.txt"))
   end
 
   def part_1(input) do
@@ -68,13 +67,14 @@ defmodule Day16Test do
   def part_2(input) do
     %{your_ticket: your_ticket} = notes = parse(input)
 
-    field_order = notes
-    |> discard_invalid()
-    |> determine_field_order()
+    field_order =
+      notes
+      |> discard_invalid()
+      |> determine_field_order()
 
     your_ticket
     |> Enum.zip(field_order)
-    |> Enum.filter(&match?({val, "departure " <> _,}, &1))
+    |> Enum.filter(&match?({_, "departure " <> _}, &1))
     |> Enum.map(&elem(&1, 0))
     |> Enum.reduce(&*/2)
   end
@@ -91,17 +91,19 @@ defmodule Day16Test do
     |> Enum.map(&Tuple.to_list/1)
     |> Enum.with_index()
     |> Enum.reduce(
-         %{},
-         fn {field_set, i}, candidate_map ->
-           Map.put(candidate_map, i, candidates(field_set, rules))
-         end)
+      %{},
+      fn {field_set, i}, candidate_map ->
+        Map.put(candidate_map, i, candidates(field_set, rules))
+      end
+    )
   end
 
   def resolve(candidate_map) do
-    resolved = candidate_map
-    |> Enum.filter(fn {i, x} -> MapSet.size(x) == 1 end)
-    |> Enum.map(fn {i, x} -> x end)
-    |> Enum.reduce(&MapSet.union/2)
+    resolved =
+      candidate_map
+      |> Enum.filter(fn {i, field_set} -> MapSet.size(field_set) == 1 end)
+      |> Enum.map(fn {_, field_set} -> field_set end)
+      |> Enum.reduce(&MapSet.union/2)
 
     if Enum.count(candidate_map) == MapSet.size(resolved) do
       Enum.map(candidate_map, fn {_, resolved} -> Enum.at(resolved, 0) end)
@@ -137,7 +139,7 @@ defmodule Day16Test do
   end
 
   def find_invalid(%{nearby_tickets: nearby_tickets, rules: rules}) do
-   nearby_tickets
+    nearby_tickets
     |> List.flatten()
     |> Enum.reject(&contains_valid_value(&1, rules))
   end
@@ -159,16 +161,16 @@ defmodule Day16Test do
   end
 
   def parse(input) do
-    String.split(input, "\n\n", trim: true)
-    |> Enum.map(&t_parse(&1, %{}))
-    |> Enum.reduce(%{}, fn a, b -> Map.merge(a,b) end)
+    input
+    |> String.split("\n\n")
+    |> Enum.reduce(%{}, &t_parse(&1, &2))
   end
 
   def t_parse("your ticket:\n" <> your_ticket, state) do
     Map.put(state, :your_ticket, ticket(your_ticket))
   end
 
-  def t_parse("nearby tickets:" <> nearby_tickets, state) do
+  def t_parse("nearby tickets:\n" <> nearby_tickets, state) do
     nearby_tickets =
       nearby_tickets
       |> String.split("\n", trim: true)
@@ -179,7 +181,7 @@ defmodule Day16Test do
 
   def t_parse(input, state) do
     input
-    |> String.split("\n", trim: true)
+    |> String.split("\n")
     |> Enum.map(&rule/1)
     |> Enum.reduce(state, fn rule, state ->
       Map.update(state, :rules, [rule], fn rules -> [rule | rules] end)
@@ -187,7 +189,9 @@ defmodule Day16Test do
   end
 
   def rule(field) do
-    %{"n" => name, "a" => a, "b" => b} = Regex.named_captures(~r/(?<n>.+): (?<a>.+) or (?<b>.+)/, field)
+    %{"n" => name, "a" => a, "b" => b} =
+      Regex.named_captures(~r/(?<n>.+): (?<a>.+) or (?<b>.+)/, field)
+
     {name, {range(a), range(b)}}
   end
 
@@ -199,9 +203,8 @@ defmodule Day16Test do
 
   def range(input) do
     input
-    |> String.split("-", trim: true)
+    |> String.split("-")
     |> Enum.map(&String.to_integer/1)
     |> Enum.into([])
   end
-
 end

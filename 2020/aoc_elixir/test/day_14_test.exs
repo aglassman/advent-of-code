@@ -24,7 +24,7 @@ defmodule Day13Test do
   end
 
   test "day 14 - part 1" do
-    assert 13105044880745 == part_1(File.read!("input/14.txt"))
+    assert 13_105_044_880_745 == part_1(File.read!("input/14.txt"))
   end
 
   test "example - part 2" do
@@ -32,7 +32,7 @@ defmodule Day13Test do
   end
 
   test "day 14 - part 2" do
-    assert 3505392154485 == part_2(File.read!("input/14.txt"))
+    assert 3_505_392_154_485 == part_2(File.read!("input/14.txt"))
   end
 
   def part_1(input) do
@@ -68,8 +68,9 @@ defmodule Day13Test do
   end
 
   def run_2([{:assign, location, value} | instructions], %{mask: {:mask, mask, m_or, _}} = mem) do
-    mem = locations(bor(location, m_or), mask)
-    |> Enum.reduce(mem, fn loc, mem -> put_in(mem, [loc], value) end)
+    mem =
+      locations(bor(location, m_or), mask)
+      |> Enum.reduce(mem, fn loc, mem -> put_in(mem, [loc], value) end)
 
     run_2(instructions, mem)
   end
@@ -89,7 +90,6 @@ defmodule Day13Test do
       bor(location, sum) - band(location, sum)
     end)
   end
-
 
   # part 1 run
   def run(instructions, mem \\ %{mask: nil})
@@ -113,23 +113,26 @@ defmodule Day13Test do
   end
 
   def to_instruction("mask = " <> mask) do
+    {and_mask, _} =
+      mask
+      |> replace("X", "0")
+      |> parse(2)
 
-    {and_mask, _} = mask
-    |> replace("X", "0")
-    |> parse(2)
-
-    {subtract_mask, _} = mask
-    |> replace("X", "1")
-    |> replace("0", "2")
-    |> replace("1", "0")
-    |> replace("2", "1")
-    |> parse(2)
+    {subtract_mask, _} =
+      mask
+      |> replace("X", "1")
+      |> replace("0", "2")
+      |> replace("1", "0")
+      |> replace("2", "1")
+      |> parse(2)
 
     {:mask, mask, and_mask, subtract_mask}
   end
 
   def to_instruction(assignment) do
-    %{"l" => location, "v" => value} = Regex.named_captures(~r/mem\[(?<l>[\d]+)\] = (?<v>[\d]+)/, assignment)
+    %{"l" => location, "v" => value} =
+      Regex.named_captures(~r/mem\[(?<l>[\d]+)\] = (?<v>[\d]+)/, assignment)
+
     {:assign, to_integer(location), to_integer(value)}
   end
 end
