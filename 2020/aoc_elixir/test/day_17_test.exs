@@ -33,8 +33,8 @@ defmodule Day17Test do
              |> Enum.count()
   end
 
-  test "day 17 - part 1" do
-    assert 273 =
+  test "day 17 - part 2" do
+    assert 1504 =
              @input
              |> cube()
              |> run(6)
@@ -42,21 +42,6 @@ defmodule Day17Test do
   end
 
   defguard is_alive?(cube, coord) when is_map_key(cube, coord)
-
-  def print(cube) do
-    [x, y, z] = min_max(cube)
-
-    cube_coord = for zp <- z, xp <- x, yp <- y, do: [xp, yp, zp]
-
-    cube_coord
-    |> Enum.sort_by(fn [x, y, z] -> [z, y, x] end)
-    |> Enum.chunk_by(fn [x, y, z] -> [y, z] end)
-    |> Enum.map(fn row ->
-      row |> Enum.map(&get_symbol(cube, &1)) |> Enum.join() |> IO.inspect()
-    end)
-
-    cube
-  end
 
   def get_symbol(cube, coord) do
     case Map.get(cube, coord) do
@@ -92,11 +77,12 @@ defmodule Day17Test do
     end
   end
 
-  def neighbors([x, y, z]) do
+  def neighbors([x, y, z, w]) do
     for xp <- [x - 1, x, x + 1],
         yp <- [y - 1, y, y + 1],
         zp <- [z - 1, z, z + 1],
-        do: [xp, yp, zp]
+        wp <- [w - 1, w, w + 1],
+        do: [xp, yp, zp, wp]
   end
 
   def live_neighbors(cube, coord) do
@@ -116,7 +102,7 @@ defmodule Day17Test do
       |> String.graphemes()
       |> Stream.with_index()
       |> Stream.reject(fn {v, _} -> v == "." end)
-      |> Stream.map(fn {"#", x} -> {[x, y, 0], true} end)
+      |> Stream.map(fn {"#", x} -> {[x, y, 0, 0], true} end)
     end)
     |> Enum.into(%{})
   end
