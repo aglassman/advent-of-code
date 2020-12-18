@@ -20,7 +20,6 @@ defmodule Day17Test do
 
   test "example - part 1" do
     assert 24 = cube(@input) |> Enum.count()
-    assert [{0, 7}, {0, 7}, {0, 0}] = cube(@input) |> min_max()
     assert 1 = cube(@input) |> live_neighbors([0, 0, 0])
     assert 6 = cube(@input) |> live_neighbors([2, 4, 0])
   end
@@ -105,21 +104,5 @@ defmodule Day17Test do
       |> Stream.map(fn {"#", x} -> {[x, y, 0, 0], true} end)
     end)
     |> Enum.into(%{})
-  end
-
-  def min_max(cube) do
-    cube
-    |> Map.keys()
-    |> Stream.zip()
-    |> Stream.map(&dimension/1)
-    |> Enum.map(&apply(Range, :new, &1))
-    |> Enum.into([])
-  end
-
-  def dimension(dimension) do
-    dimension
-    |> Tuple.to_list()
-    |> Enum.min_max()
-    |> Tuple.to_list()
   end
 end
