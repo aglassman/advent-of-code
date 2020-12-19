@@ -92,10 +92,10 @@ defmodule Day19Test do
   end
 
   def split([a]) when a in ["a", "b"], do: [a]
-  def split([a]), do: to_ints(a)
-  def split([a, b]), do: [to_ints(a),to_ints(b)]
+  def split([a]), do: rule_list(a)
+  def split([a, b]), do: [rule_list(a),rule_list(b)]
 
-  def to_ints(rules) do
+  def rule_list(rules) do
     rules
     |> String.split(" ")
     |> Enum.reject(&(&1 == ""))
