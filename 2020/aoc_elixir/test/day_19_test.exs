@@ -47,7 +47,7 @@ defmodule Day19Test do
 
     rules = rules(rules_in)
 
-    assert 0 = messages_in
+    assert 289 = messages_in
                |> String.split("\n")
                |> Enum.filter(fn message -> matches?(message, rules) end)
                |> Enum.count()
