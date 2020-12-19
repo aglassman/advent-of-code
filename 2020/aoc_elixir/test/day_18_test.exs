@@ -32,7 +32,7 @@ defmodule Day18Test do
   end
 
   test "day 18 - part 2" do
-    assert 29839238838303 == "input/18.txt""input/18.txt"
+    assert 29839238838303 == "input/18.txt"
     |> File.read!()
     |> String.split("\n")
     |> Enum.map_join("+", &"(#{&1})")
