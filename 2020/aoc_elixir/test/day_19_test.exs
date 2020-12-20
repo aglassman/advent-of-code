@@ -17,7 +17,6 @@ defmodule Day19Test do
   5: "b"
   """
 
-
   test "example - part 1" do
     rules = rules(@example)
     assert matches?("aba", rules)
@@ -36,10 +35,11 @@ defmodule Day19Test do
 
     rules = rules(rules_in)
 
-    assert 139 = messages_in
-      |> String.split("\n")
-      |> Enum.filter(fn message -> matches?(message, rules) end)
-      |> Enum.count()
+    assert 139 =
+             messages_in
+             |> String.split("\n")
+             |> Enum.filter(fn message -> matches?(message, rules) end)
+             |> Enum.count()
   end
 
   test "day 19 - part 2" do
@@ -47,34 +47,37 @@ defmodule Day19Test do
 
     rules = rules(rules_in)
 
-    assert 289 = messages_in
-               |> String.split("\n")
-               |> Enum.filter(fn message -> matches?(message, rules) end)
-               |> Enum.count()
+    assert 289 =
+             messages_in
+             |> String.split("\n")
+             |> Enum.filter(fn message -> matches?(message, rules) end)
+             |> Enum.count()
   end
 
   def matches?(message, rules) do
     message
     |> String.graphemes()
-    |> matches?(rules,  Map.get(rules, "0"))
+    |> matches?(rules, Map.get(rules, "0"))
   end
 
-  def matches?(msg, rules, [rule_hd | to_match]) when is_map_key(rules, rule_hd)  do
+  def matches?(msg, rules, [rule_hd | to_match]) when is_map_key(rules, rule_hd) do
     case Map.get(rules, rule_hd) do
-      [[_|_] = x, [_|_] = y] ->  matches?(msg, rules, x ++ to_match) || matches?(msg, rules, y ++ to_match)
-      x ->  matches?(msg, rules, x ++ to_match)
+      [[_ | _] = x, [_ | _] = y] ->
+        matches?(msg, rules, x ++ to_match) || matches?(msg, rules, y ++ to_match)
+
+      x ->
+        matches?(msg, rules, x ++ to_match)
     end
   end
 
   def matches?([_ | _], rules, []), do: false
   def matches?([], rules, []), do: true
 
-  def matches?([hd | tail], rules, [hd | to_match])  do
+  def matches?([hd | tail], rules, [hd | to_match]) do
     matches?(tail, rules, to_match)
   end
 
   def matches?(_, _, _), do: false
-
 
   def rules(input) do
     input
@@ -93,7 +96,7 @@ defmodule Day19Test do
 
   def split([a]) when a in ["a", "b"], do: [a]
   def split([a]), do: rule_list(a)
-  def split([a, b]), do: [rule_list(a),rule_list(b)]
+  def split([a, b]), do: [rule_list(a), rule_list(b)]
 
   def rule_list(rules) do
     rules
