@@ -49,51 +49,21 @@ defmodule Day18Test do
   end
 
   def eval([], [output]), do: output
+  def eval(input, [a, "*", b] = c) when is_integer(a) and is_integer(b), do: eval(input, [a * b])
+  def eval(input, [a, "+", b] = c) when is_integer(a) and is_integer(b), do: eval(input, [a + b])
+  def eval(["(" | b], output) do {result, remainder} = reduce(b); eval(remainder, [result] ++ output) end
 
-  def eval(input, [a, "*", b] = c) when is_integer(a) and is_integer(b) do
-    eval(input, [a * b])
-  end
 
-  def eval(input, [a, "+", b] = c) when is_integer(a) and is_integer(b) do
-    eval(input, [a + b])
-  end
-
-  def eval(["(" | b], output) do
-#    IO.inspect([:b,b, output])
-    {result, remainder} = reduce(b)
-    eval(remainder, [result] ++ output)
-  end
-
-  def eval([a | b], output) do
-#    IO.inspect([:c, a, b, output])
-    eval(b, [a] ++ output)
-  end
+  def eval([a | b], output), do: eval(b, [a] ++ output)
 
   def reduce(input, acc \\ [], depth \\ 1)
+  def reduce([], acc, depth), do: {eval(acc, []), []}
+  def reduce([")" | b], acc, 1), do: {eval(acc, []), b}
+  def reduce([")" | b], acc, depth), do: reduce(b, acc ++ [")"], depth - 1)
+  def reduce(["(" | b], acc, depth), do: reduce(b, acc ++ ["("], depth + 1)
+  def reduce([a | b], acc, depth), do: reduce(b, acc ++ [a], depth)
 
-  def reduce([], acc, depth) do
-    {eval(acc, []), []}
-  end
-
-  def reduce([")" | b], acc, 1) do
-    {eval(acc, []), b}
-  end
-
-  def reduce([")" | b], acc, depth) do
-    reduce(b, acc ++ [")"], depth - 1)
-  end
-
-  def reduce(["(" | b], acc, depth) do
-    reduce(b, acc ++ ["("], depth + 1)
-  end
-
-  def reduce([a | b], acc, depth) do
-    reduce(b, acc ++ [a], depth)
-  end
-
-  def parse(x) when x in ["(", ")"], do: x
-  def parse("*"), do: "*"
-  def parse("+"), do: "+"
+  def parse(x) when x in ["(", ")", "*", "+"], do: x
   def parse(x), do: String.to_integer(x)
 
 
