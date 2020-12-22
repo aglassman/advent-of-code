@@ -42,9 +42,6 @@ defmodule Day20Test do
     shared_edge_map = shared_edges(edge_map) |> IO.inspect()
     corners = corners(shared_edge_map)
     [start | _] = corners
-
-
-
   end
 
   def part_1(tiles) do
@@ -67,7 +64,6 @@ defmodule Day20Test do
   end
 
   def flip(body_lines) do
-
   end
 
   def corners(shared_edge_map) do
@@ -82,9 +78,9 @@ defmodule Day20Test do
     |> Enum.reduce(%{}, fn {tile_id, edges}, edge_map ->
       edges
       |> Enum.reduce(
-           edge_map,
-           &Map.update(&2, &1, [tile_id], fn tile_ids -> [tile_id | tile_ids] end)
-         )
+        edge_map,
+        &Map.update(&2, &1, [tile_id], fn tile_ids -> [tile_id | tile_ids] end)
+      )
     end)
   end
 
@@ -99,7 +95,8 @@ defmodule Day20Test do
             List.flatten(tiles ++ edge_shared)
             |> :lists.usort()
             |> Enum.reject(fn tile_id -> tile_id == &1 end)
-          end))
+          end)
+        )
       else
         shared_edge_map
       end
@@ -140,6 +137,4 @@ defmodule Day20Test do
 
   def to_int_inv(list),
     do: Enum.map(list, fn x -> x |> String.reverse() |> Integer.parse(2) |> elem(0) end)
-
-
 end
