@@ -40,6 +40,7 @@ defmodule Day20Test do
     IO.inspect(tiles)
     edge_map = edge_map(tiles) |> IO.inspect()
     shared_edge_map = shared_edges(edge_map) |> IO.inspect()
+    tiles |> Enum.map(&to_edge_tuple/1) |> IO.inspect()
     corners = corners(shared_edge_map)
     [start | _] = corners
   end
@@ -101,6 +102,18 @@ defmodule Day20Test do
         shared_edge_map
       end
     end)
+  end
+
+  def to_edge_tuple({tile_id, body}) do
+    body_lines = body_lines(body)
+    body_columns = body_columns(body_lines)
+
+    [n | _] = body_lines
+    s = Enum.at(body_lines, -1)
+    [w | _] = body_columns
+    e = Enum.at(body_columns, -1)
+
+    {tile_id, to_int([n, e, s, w]) ++ to_int_inv([n, e, s, w])}
   end
 
   def to_edge_tuple({tile_id, body}) do
