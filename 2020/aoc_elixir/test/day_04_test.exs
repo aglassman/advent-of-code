@@ -67,13 +67,16 @@ defmodule Day04Test do
     assert 121 == parse_input(File.read!("input/4.txt")) |> count_valid(validate_fields: true)
   end
 
+  # each empty line represents a new passport
   def parse_input(input) do
     input
     |> String.split("\n\n")
     |> Stream.map(&to_map/1)
   end
 
+  # parse the passport input into a map.
   def to_map(string) do
+    # Used regex to ignore new line.  Probably could have used a name caputre here!
     Regex.scan(~r/.{3}:[^ \n]+/, string)
     |> Stream.map(fn [<<key::binary-size(3)>> <> ":" <> value] -> {key, value} end)
     |> Enum.into(%{})
@@ -81,16 +84,21 @@ defmodule Day04Test do
 
   def count_valid(passports, opts \\ []) do
     passports
-    |> Stream.map(fn passport -> Map.take(passport, @required_fields) end)
+    |> Stream.map(&Map.take(&1, @required_fields) end)
     |> Stream.reject(fn passport ->
-      Enum.count(Map.keys(passport)) != Enum.count(@required_fields)
-    end)
+        # verify that required fields are all present
+        Enum.count(Map.keys(passport)) != Enum.count(@required_fields)
+      end)
     |> Stream.reject(fn passport ->
-      Keyword.get(opts, :validate_fields, false) && !fields_valid?(passport)
-    end)
+        # validate fields, reject those that are invalid
+        Keyword.get(opts, :validate_fields, false) && !fields_valid?(passport)
+      end)
     |> Enum.count()
   end
 
+  # Funciton to make checking the range between two strings easier
+  # Could have been parsed into an Integer earlier, but hindsight
+  # is a luxury in AOC!
   def val_check(str_value, min, max) do
     int_val = String.to_integer(str_value)
     int_val >= min && int_val <= max
@@ -100,12 +108,14 @@ defmodule Day04Test do
     passport |> Enum.all?(&field_valid?/1)
   end
 
+  # Pattern matching made this part fun to write!
   def field_valid?({"byr", value}), do: val_check(value, 1920, 2002)
 
   def field_valid?({"iyr", value}), do: val_check(value, 2010, 2020)
 
   def field_valid?({"eyr", value}), do: val_check(value, 2020, 2030)
 
+  # Named caputres are a blessing, I love how easy they are to use in Elixir!
   def field_valid?({"hgt", value}) do
     case Regex.named_captures(~r/(?<height>[\d]+)(?<unit>in|cm)/, value) do
       %{"height" => h, "unit" => "in"} -> val_check(h, 59, 76)
@@ -114,8 +124,11 @@ defmodule Day04Test do
     end
   end
 
+  # pattern match prefix for hcl, and regex to very contents.  Could have all
+  # been a regex, but this was more fun IMO.
   def field_valid?({"hcl", "#" <> value}), do: Regex.match?(~r/^[0-9a-f]{6}$/, value)
 
+  # word list sigil made this nice and compact
   def field_valid?({"ecl", value}), do: value in ~W/amb blu brn gry grn hzl oth/
 
   def field_valid?({"pid", value}), do: Regex.match?(~r/^[0-9]{9}$/, value)

@@ -97,7 +97,15 @@ defmodule Day03Test do
   end
 
   @doc """
-  
+  We calculate the offset for each iteration, as a row.
+  [ ".", ".", ".",
+    ".", ".", "#",
+    "#", ".", ".",
+  ]
+
+  I was actually surprised this provided the correct answer with a "down" slope
+  greater than one, but I didn't try to figure out if the math works out, or I just got
+  lucky with the input!
   """
   def encountered_trees({map, width, height}, {right, down} = slope) do
     0..(height - 1)
