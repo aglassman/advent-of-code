@@ -69,8 +69,10 @@ defmodule Day23Test do
   def find_next_destination(current_cup, remaining_cups) do
     current_cup =
       case current_cup - 1 do
-        0 -> 9 # if zero, wrap back to highest, which is 9
-        x -> x # else, use current_cup - 1
+        # if zero, wrap back to highest, which is 9
+        0 -> 9
+        # else, use current_cup - 1
+        x -> x
       end
 
     candidate = current_cup

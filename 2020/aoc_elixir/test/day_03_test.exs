@@ -15,7 +15,6 @@ defmodule Day03Test do
   .#..#...#.#
   """
 
-
   test "example - part 1" do
     {map, width, height} = input = parse_input(@example)
     assert 11 == width
