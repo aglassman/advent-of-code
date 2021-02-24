@@ -15,15 +15,19 @@ defmodule Day03Test do
   .#..#...#.#
   """
 
+
   test "example - part 1" do
     {map, width, height} = input = parse_input(@example)
     assert 11 == width
     assert 11 == height
 
+    # validating that the expected size of the input matches
+    # the parsed input
     assert 11 * 11 ==
              map
              |> Enum.count()
 
+    # count the number of encountered trees for the given slope.
     assert 7 == encountered_trees(input, {3, 1})
   end
 
@@ -41,11 +45,13 @@ defmodule Day03Test do
     assert 220 == encountered_trees(input, {3, 1})
   end
 
+  # define multiple slopes
   @slopes [{1, 1}, {3, 1}, {5, 1}, {7, 1}, {1, 2}]
 
   test "example - part 2" do
     {map, width, height} = input = parse_input(@example)
 
+    # fun use of map reduce
     assert 336 ==
              @slopes
              |> Enum.map(&encountered_trees(input, &1))
@@ -61,6 +67,11 @@ defmodule Day03Test do
              |> Enum.reduce(&*/2)
   end
 
+  @doc """
+  Takes the string input, and returns a tuple of
+  {map, width, height}
+  map is a list of "." or "#" strings.
+  """
   def parse_input(input) do
     [line_1 | _] =
       lines =
@@ -85,9 +96,16 @@ defmodule Day03Test do
     {map, width, height}
   end
 
-  def encountered_trees({map, width, height}, {right, down}) do
+  @doc """
+  
+  """
+  def encountered_trees({map, width, height}, {right, down} = slope) do
     0..(height - 1)
-    |> Enum.filter(&(Enum.at(map, &1 * down * width + rem(&1 * right, width)) == "#"))
+    |> Enum.filter(&(Enum.at(map, calculate_offset(&1, width, slope)) == "#"))
     |> Enum.count()
+  end
+
+  defp calculate_offset(iteration, width, {right, down}) do
+    iteration * down * width + rem(iteration * right, width)
   end
 end
