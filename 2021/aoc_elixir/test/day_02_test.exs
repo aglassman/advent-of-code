@@ -10,7 +10,7 @@ defmodule Day02Test do
   end
 
   test "day 01 - part 1" do
-    assert 1840243 ==
+    assert 1_840_243 ==
              File.read!("input/2.txt")
              |> parse_input()
              |> navigate()
@@ -26,7 +26,7 @@ defmodule Day02Test do
   end
 
   test "day 01 - part 2" do
-    assert 1727785422 ==
+    assert 1_727_785_422 ==
              File.read!("input/2.txt")
              |> parse_input()
              |> navigate_with_aim()
@@ -66,7 +66,7 @@ defmodule Day02Test do
       fn {direction, value}, {horizontal, depth, aim} ->
         case direction do
           "forward" ->
-            {horizontal + value, depth + (aim * value), aim}
+            {horizontal + value, depth + aim * value, aim}
 
           "up" ->
             {horizontal, depth, aim - value}
