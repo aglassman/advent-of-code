@@ -25,11 +25,9 @@ defmodule Day03Test do
   end
 
   test "example 2" do
-
   end
 
   test "day 03 - part 2" do
-
   end
 
   def parse_input(input) do
@@ -59,5 +57,4 @@ defmodule Day03Test do
   def solve_pt_1(gamma_rate, max) do
     gamma_rate * bxor(max, gamma_rate)
   end
-
 end
