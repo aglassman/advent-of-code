@@ -10,7 +10,7 @@ defmodule Day05Test do
              |> solve()
   end
 
-  test "day 04 - part 1" do
+  test "day 05 - part 1" do
     assert 6283 ==
              File.read!("input/5.txt")
              |> parse_input()
@@ -26,7 +26,7 @@ defmodule Day05Test do
              |> solve()
   end
 
-  test "day 04 - part 2" do
+  test "day 05 - part 2" do
     assert 18864 ==
              File.read!("input/5.txt")
              |> parse_input()
