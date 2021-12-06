@@ -1,6 +1,5 @@
 defmodule Day05Test do
   use ExUnit.Case
-  use Bitwise
 
   test "example" do
     assert 5 ==

@@ -1,6 +1,5 @@
 defmodule Day04Test do
   use ExUnit.Case
-  use Bitwise
 
   test "example" do
     assert 4512 ==
