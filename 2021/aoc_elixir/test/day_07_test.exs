@@ -29,11 +29,6 @@ defmodule Day07Test do
              |> least_fuel(:increasing)
   end
 
-  @doc """
-  returns:
-  %{ 1 => 23, 2 => 12}
-  Where key is the remaining time, and value is the number of fish for that time.
-  """
   def parse_input(input) do
     input
     |> String.split(",", trim: true)
