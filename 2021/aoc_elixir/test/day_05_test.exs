@@ -56,13 +56,16 @@ defmodule Day05Test do
       cond do
         x1 == x2 || y1 == y2 ->
           for x <- x1..x2, y <- y1..y2, do: {{x, y}, 1}
+
         consider_diagonal ->
           len = abs(x1 - x2)
-          x_dir = (x2 - x1) / len |> trunc
-          y_dir = (y2 - y1) / len |> trunc
+          x_dir = ((x2 - x1) / len) |> trunc
+          y_dir = ((y2 - y1) / len) |> trunc
+
           for i <- 0..len do
-            {{x1 + (i * x_dir), y1 + (i * y_dir)}, 1}
+            {{x1 + i * x_dir, y1 + i * y_dir}, 1}
           end
+
         true ->
           []
       end

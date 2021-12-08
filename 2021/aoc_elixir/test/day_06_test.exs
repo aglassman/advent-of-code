@@ -9,14 +9,14 @@ defmodule Day06Test do
   end
 
   test "day 06 - part 1" do
-    assert 359999 ==
+    assert 359_999 ==
              File.read!("input/6.txt")
              |> parse_input()
              |> simulate(80)
   end
 
   test "example 2" do
-    assert 26984457539 ==
+    assert 26_984_457_539 ==
              File.read!("input/6.example.txt")
              |> parse_input()
              |> simulate(256)
@@ -57,8 +57,9 @@ defmodule Day06Test do
       5 => Map.get(state, 6, 0),
       6 => Map.get(state, 7, 0) + Map.get(state, 0, 0),
       7 => Map.get(state, 8, 0),
-      8 => Map.get(state, 0, 0),
+      8 => Map.get(state, 0, 0)
     }
+
     simulate(new_state, iterations - 1)
   end
 end

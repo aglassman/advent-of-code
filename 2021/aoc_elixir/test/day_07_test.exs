@@ -9,7 +9,7 @@ defmodule Day07Test do
   end
 
   test "day 06 - part 1" do
-    assert 328318 ==
+    assert 328_318 ==
              File.read!("input/7.txt")
              |> parse_input()
              |> least_fuel(:constant)
@@ -24,7 +24,7 @@ defmodule Day07Test do
 
   test "day 06 - part 2" do
     assert 18864 ==
-             File.read!("input/7.txt")
+             File.r6ead!("input/7.txt")
              |> parse_input()
              |> least_fuel(:increasing)
   end
@@ -46,17 +46,16 @@ defmodule Day07Test do
 
   def total_fuel_cost(:constant, input, offset) do
     Enum.reduce(input, 0, fn {position, count}, acc ->
-      acc + (count * abs(offset - position))
+      acc + count * abs(offset - position)
     end)
   end
 
   def total_fuel_cost(:increasing, input, offset) do
     Enum.reduce(input, 0, fn {position, count}, acc ->
-      acc + (count * summation(abs(offset - position)))
+      acc + count * summation(abs(offset - position))
     end)
   end
 
- def summation(0), do: 0
- def summation(n), do: n + summation(n-1)
-
+  def summation(0), do: 0
+  def summation(n), do: n + summation(n - 1)
 end
