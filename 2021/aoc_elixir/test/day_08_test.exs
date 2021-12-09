@@ -1,4 +1,4 @@
-defmodule Day07Test do
+defmodule Day08Test do
   use ExUnit.Case
 
   test "example" do
