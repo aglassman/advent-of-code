@@ -103,7 +103,6 @@ defmodule Day10Test do
     |> Enum.map(fn
       {:incomplete, _line_index, _line, stack} ->
         stack
-        |> IO.inspect()
         |> Enum.reduce(0, fn character, acc ->
           (acc * 5) + Map.get(@point_map_pt2, character)
         end)
