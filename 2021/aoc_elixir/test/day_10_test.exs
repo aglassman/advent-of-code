@@ -18,15 +18,19 @@ defmodule Day10Test do
   end
 
   test "example 2" do
-    assert 0 ==
+    assert 288957 ==
              File.read!("input/10.example.txt")
              |> parse_input()
+             |> check_program_syntax()
+             |> solve_pt2()
   end
 
   test "day 10 - part 2" do
     assert 0 ==
              File.read!("input/10.txt")
              |> parse_input()
+             |> check_program_syntax()
+             |> solve_pt2()
   end
 
 
@@ -54,7 +58,7 @@ defmodule Day10Test do
         :end, _stack = [] ->
           {:halt, {:ok, line_index, line, nil}}
         :end, stack when length(stack) > 0 ->
-          {:halt, {:ok, line_index, line, nil}}
+          {:halt, {:incomplete, line_index, line, stack}}
         ")", ["(" | stack] ->
           {:cont, stack}
         "}", ["{" | stack] ->
@@ -85,6 +89,30 @@ defmodule Day10Test do
       _ -> 0
     end)
     |> Enum.sum()
+  end
+
+  @point_map_pt2 %{
+    "(" => 1,
+    "[" => 2,
+    "{" => 3,
+    "<" => 4,
+  }
+
+  def solve_pt2(line_outputs) do
+    scores = line_outputs
+    |> Enum.map(fn
+      {:incomplete, _line_index, _line, stack} ->
+        stack
+        |> IO.inspect()
+        |> Enum.reduce(0, fn character, acc ->
+          (acc * 5) + Map.get(@point_map_pt2, character)
+        end)
+      _ -> nil
+    end)
+    |> Enum.reject(&is_nil/1)
+    |> Enum.sort()
+
+    Enum.at(scores, (length(scores) / 2 |> trunc))
   end
 
 end
