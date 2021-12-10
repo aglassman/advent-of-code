@@ -27,7 +27,7 @@ defmodule Day09Test do
   end
 
   test "day 09 - part 2" do
-    assert 0 ==
+    assert 858494 ==
              File.read!("input/9.txt")
              |> parse_input()
              |> low_points()
