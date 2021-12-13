@@ -32,7 +32,7 @@ defmodule Day12Test do
   end
 
   test "day 12 - part 2" do
-    assert 131254 ==
+    assert 131_254 ==
              File.read!("input/12.txt")
              |> parse_input()
              |> find_all_paths(:part_2)
@@ -95,13 +95,13 @@ defmodule Day12Test do
     else
       frequencies = Enum.frequencies(path)
 
-      double_visit_count = frequencies
-                           |> Enum.reject(fn {k, v} -> is_big?(k) || (k in ["start", "end"]) end)
-                           |> Enum.filter(fn {k, v} -> v > 1 end)
-                           |> Enum.count()
+      double_visit_count =
+        frequencies
+        |> Enum.reject(fn {k, v} -> is_big?(k) || k in ["start", "end"] end)
+        |> Enum.filter(fn {k, v} -> v > 1 end)
+        |> Enum.count()
 
-      double_visit_count == 1 && (Map.get(frequencies, cave, 0) > 0)
+      double_visit_count == 1 && Map.get(frequencies, cave, 0) > 0
     end
   end
-
 end
