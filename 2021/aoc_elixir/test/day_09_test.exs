@@ -27,7 +27,7 @@ defmodule Day09Test do
   end
 
   test "day 09 - part 2" do
-    assert 858494 ==
+    assert 858_494 ==
              File.read!("input/9.txt")
              |> parse_input()
              |> low_points()
@@ -58,24 +58,27 @@ defmodule Day09Test do
   end
 
   def low_points(height_map) do
-    low_points = height_map
-    |> Enum.filter(fn {position, height} ->
-      any_adj_higher = position
-      |> adjacent(height_map)
-      |> Enum.any?(fn {_position, adj_height} -> adj_height <= height end)
+    low_points =
+      height_map
+      |> Enum.filter(fn {position, height} ->
+        any_adj_higher =
+          position
+          |> adjacent(height_map)
+          |> Enum.any?(fn {_position, adj_height} -> adj_height <= height end)
 
-      !any_adj_higher
-    end)
+        !any_adj_higher
+      end)
 
     {:low_points, height_map, low_points}
   end
 
   def basins({:low_points, height_map, low_points}) do
-    basins = Enum.map(low_points, fn low_point ->
-      [low_point]
-      |> basin(height_map)
-      |> Enum.uniq()
-    end)
+    basins =
+      Enum.map(low_points, fn low_point ->
+        [low_point]
+        |> basin(height_map)
+        |> Enum.uniq()
+      end)
 
     {:basins, height_map, basins}
   end
@@ -83,9 +86,10 @@ defmodule Day09Test do
   def basin([], _height_map, basin), do: basin
 
   def basin([{lp_position, lp_height} = low_point | low_points], height_map, basin \\ []) do
-    expansion = lp_position
-    |> adjacent(height_map)
-    |> Enum.reject(fn {position, height} -> height <= lp_height || height == 9 end)
+    expansion =
+      lp_position
+      |> adjacent(height_map)
+      |> Enum.reject(fn {position, height} -> height <= lp_height || height == 9 end)
 
     basin(low_points ++ expansion, height_map, basin ++ [low_point] ++ expansion)
   end

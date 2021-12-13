@@ -104,8 +104,6 @@ defmodule Day08Test do
             size == 4 -> {4, output_value}
             size == 3 -> {7, output_value}
             size == 7 -> {8, output_value}
-            size == 5 ->
-            size == 6 ->
           end
       end)
 
@@ -122,6 +120,6 @@ defmodule Day08Test do
         end
       )
 
-      solve(remaining_signal_patterns, output_values)
+    solve(remaining_signal_patterns, output_values)
   end
 end
