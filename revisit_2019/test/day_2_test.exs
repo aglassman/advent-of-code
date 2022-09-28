@@ -6,7 +6,6 @@ defmodule Day02Test do
   test "part 1" do
     output =
       input()
-      |> String.split(",")
       |> then(&new/1)
       |> then(&Map.put(&1, 1, 12))
       |> then(&Map.put(&1, 2, 2))
@@ -20,7 +19,6 @@ defmodule Day02Test do
     for noun <- 0..99, verb <- 0..99 do
       output =
         input()
-        |> String.split(",")
         |> then(&new/1)
         |> then(&Map.put(&1, 1, noun))
         |> then(&Map.put(&1, 2, verb))
