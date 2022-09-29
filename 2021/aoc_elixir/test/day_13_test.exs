@@ -6,7 +6,7 @@ defmodule Day13Test do
              File.read!("input/13.example.txt")
              |> parse_input()
              |> then(fn {dot_set, [instruction | _]} ->
-               {dot_set,  [instruction]}
+               {dot_set, [instruction]}
              end)
              |> fold()
              |> MapSet.size()
@@ -17,7 +17,7 @@ defmodule Day13Test do
              File.read!("input/13.txt")
              |> parse_input()
              |> then(fn {dot_set, [instruction | _]} ->
-               {dot_set,  [instruction]}
+               {dot_set, [instruction]}
              end)
              |> fold()
              |> MapSet.size()
@@ -98,7 +98,7 @@ defmodule Day13Test do
     |> Enum.reduce(dot_set, fn {x, y} = dot, folded_set ->
       folded_set
       |> MapSet.delete(dot)
-      |> MapSet.put({x, abs(y - (line * 2))})
+      |> MapSet.put({x, abs(y - line * 2)})
     end)
   end
 
@@ -108,17 +108,18 @@ defmodule Day13Test do
     |> Enum.reduce(dot_set, fn {x, y} = dot, folded_set ->
       folded_set
       |> MapSet.delete(dot)
-      |> MapSet.put({abs(x - (line * 2)), y})
+      |> MapSet.put({abs(x - line * 2), y})
     end)
   end
 
   def visualize(dot_set) do
     {:ok, pid} = StringIO.open("visualize")
 
-    [xs, ys] = dot_set
-    |> Enum.map(&Tuple.to_list/1)
-    |> Enum.zip()
-    |> Enum.map(&Tuple.to_list/1)
+    [xs, ys] =
+      dot_set
+      |> Enum.map(&Tuple.to_list/1)
+      |> Enum.zip()
+      |> Enum.map(&Tuple.to_list/1)
 
     x_max = Enum.max(xs)
     y_max = Enum.max(ys)
@@ -142,5 +143,4 @@ defmodule Day13Test do
     IO.puts(output)
     output
   end
-
 end

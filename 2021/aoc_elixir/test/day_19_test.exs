@@ -1,103 +1,65 @@
-defmodule Day16Test do
+defmodule Day19Test do
   use ExUnit.Case
 
-  test "example 1" do
-    assert [{:header, :literal, 6, 4, {:literal, 2021}}, <<0::size(3)>>] ==
-             "D2FE28"
-             |> parse_input()
-             |> parse()
+  import :math, only: [cos: 1, sin: 1]
+
+  test "rotx" do
+    assert 1 == rot_x([[1, 1, 1, 1]], 90)
   end
 
-  test "example 1.1" do
-    assert [{:header, :operator, 1, 6, {:length, 27, [{:header, :literal, 6, 4, {:literal, 10}}, {{:header, :literal, 2, 4, {:literal, 20}}, ""}]}}, :end]
-           ==
-             "38006F45291200"
-             |> parse_input()
-             |> parse()
-  end
-
-  test "example 1.2" do
-    assert  [{:header, :operator, 4, 2, {:literal, 1}}, {{:header, :operator, 1, 2, {:literal, 1}}, <<168, 0, 47, 71, 8::size(4)>>}] ==
-             "8A004A801A8002F478"
-             |> parse_input()
-             |> parse()
-  end
-
-  test "day 16 - part 1" do
+  test "example" do
     assert 0 ==
-             File.read!("input/16.txt")
+             File.read!("input/19.example.txt")
              |> parse_input()
-             |> parse()
-             |> IO.inspect()
+  end
+
+  test "day 19 - part 1" do
+    assert 0 ==
+             File.read!("input/19.txt")
+             |> parse_input()
   end
 
   test "example 2" do
-    assert 0 ==
-             File.read!("input/16.txt")
+     assert 0 ==
+             File.read!("input/19.example.txt")
              |> parse_input()
   end
 
-  test "day 16 - part 2" do
+  test "day 19 - part 2" do
+
     assert 0 ==
-             File.read!("input/16.txt")
+             File.read!("input/19.txt")
              |> parse_input()
   end
 
+  @doc """
+
+  """
   def parse_input(input) do
-    Base.decode16!(input)
+    Regex.split(~r/--- scanner ([\d]+) ---/, input, trim: true)
+    |> Enum.with_index()
+    |> Enum.map(&to_scanner/1)
   end
 
-  def parse(input, output \\ []) do
-    case header(input) do
-      :end ->
-        output
+  def to_scanner({beacon_positions_str, id}) do
+    beacon_positions = beacon_positions_str
+    |> String.split("\n", trim: true)
+    |> Enum.map(fn beacon_position_str ->
+      beacon_position_str
+      |> String.split(",", trim: true)
+      |> Enum.map(&String.to_integer/1)
+    end)
 
-      {parsed, remaining} ->
-        output ++ [parsed, header(remaining)]
-    end
+    %{id: id, beacon_positions: beacon_positions, rotation: {0, 0, 0}}
   end
 
-  def header(<<version::3, type::3, rest::bitstring>>) do
-    packet =
-      case {version, type} do
-        {0, 0} ->
-          :end
+  def rot_x(point, r) do
+     rx = [[1, 0 ,0, 0],
+      [0, cos(r), -sin(r), 0],
+      [0, sin(r), cos(r), 0 ],
+      [0, 0, 0, 1]]
 
-        {_, 4} ->
-          {parsed, remaining} = literal_value(rest, <<>>)
-          {{:header, :literal, version, type, parsed}, remaining}
-
-        {_, _} ->
-          {parsed, remaining} = operator(rest)
-          {{:header, :operator, version, type, parsed}, remaining}
-      end
-  rescue
-    error ->
-      :end
+     Matrix.mult(point, rx)
   end
 
-  def header(input) do
-    input
-  end
-
-  def literal_value(<<1::1, number::4, rest::bitstring>>, acc) do
-    literal_value(rest, <<acc::bitstring, number::4>>)
-  end
-
-  def literal_value(<<0::1, number::4, rest::bitstring>>, acc) do
-    val = <<acc::bitstring, number::4>>
-    val_size = bit_size(val)
-    <<num::integer-size(val_size)>> = val
-    {{:literal, num}, rest}
-  end
-
-  def operator(<<1::1, number::11, rest::bitstring>>) do
-    {{:literal, number}, rest}
-  end
-
-  def operator(<<0::1, len::15, subpackets::bitstring-size(len), rest::bitstring>>) do
-    {{:length, len, parse(subpackets)}, rest}
-  end
-
-  def operator(_), do: :end
 end

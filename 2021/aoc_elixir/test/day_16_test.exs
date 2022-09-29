@@ -1,100 +1,103 @@
-defmodule Day15Test do
+defmodule Day16Test do
   use ExUnit.Case
 
-  test "example" do
-    assert 0 ==
-             File.read!("input/15.example.txt")
+  test "example 1" do
+    assert [{:header, :literal, 6, 4, {:literal, 2021}}, <<0::size(3)>>] ==
+             "D2FE28"
              |> parse_input()
-             |> shortest_path()
+             |> parse()
   end
 
-  test "day 15 - part 1" do
-    assert 0 ==
-             File.read!("input/15.txt")
+  test "example 1.1" do
+    assert [{:header, :operator, 1, 6, {:length, 27, [{:header, :literal, 6, 4, {:literal, 10}}, {{:header, :literal, 2, 4, {:literal, 20}}, ""}]}}, :end]
+           ==
+             "38006F45291200"
              |> parse_input()
+             |> parse()
+  end
+
+  test "example 1.2" do
+    assert  [{:header, :operator, 4, 2, {:literal, 1}}, {{:header, :operator, 1, 2, {:literal, 1}}, <<168, 0, 47, 71, 8::size(4)>>}] ==
+             "8A004A801A8002F478"
+             |> parse_input()
+             |> parse()
+  end
+
+  test "day 16 - part 1" do
+    assert 0 ==
+             File.read!("input/16.txt")
+             |> parse_input()
+             |> parse()
+             |> IO.inspect()
   end
 
   test "example 2" do
     assert 0 ==
-             File.read!("input/15.example.txt")
+             File.read!("input/16.txt")
              |> parse_input()
   end
 
-  test "day 15 - part 2" do
-   assert 0 ==
-             File.read!("input/15.txt")
+  test "day 16 - part 2" do
+    assert 0 ==
+             File.read!("input/16.txt")
              |> parse_input()
   end
 
-  @doc """
-  returns a map of all locations in an N x N square
-  Top row is {0, 0}, {1, 0} ...
-  Bottom row is {N, 0}, {N, 1}, ..., {N, N}
-  %{
-    {x, y} => risk_level
-  }
-  """
   def parse_input(input) do
-    input
-    |> String.split("\n", trim: true)
-    |> Enum.with_index()
-    |> Enum.flat_map(fn {row, y} ->
-      row
-      |> String.graphemes()
-      |> Enum.map(&String.to_integer/1)
-      |> Enum.with_index()
-      |> Enum.map(fn {risk_level, x} -> {{x, y}, %{risk_level: risk_level}} end)
-    end)
-    |> Map.new()
+    Base.decode16!(input)
   end
 
-  @root {0, 0}
+  def parse(input, output \\ []) do
+    case header(input) do
+      :end ->
+        output
 
-  def shortest_path(risk_map, target) do
-    unvisited = risk_map
-    risk_map
-    |> Enum.map(
-      fn
-        {@root, _} -> {@root, %{risk_level: 0, distance: 0}}
-        {position, risk} -> {position, %{risk, distance: :infinity}}
-      end)
-    |> Map.new()
-
-    visited = Map.take(unvisited, @root)
-    unvisited = Map.drop(unvisited, @root)
-
-    max_x = risk_map
-    |> Enum.map(fn {{x, _}, _} -> x end)
-    |> Enum.max()
-
-    max_y = risk_map
-    |> Enum.map(fn {{_, y}, _} -> y end)
-    |> Enum.max()
-
-    do_shortest_path(visited, unvisited, {max_x, max_y})
+      {parsed, remaining} ->
+        output ++ [parsed, header(remaining)]
+    end
   end
 
-  def do_shortest_path(visited, to_visit, to_find) do
-    Enum.min_by(
+  def header(<<version::3, type::3, rest::bitstring>>) do
+    packet =
+      case {version, type} do
+        {0, 0} ->
+          :end
 
-    )
-  end
+        {_, 4} ->
+          {parsed, remaining} = literal_value(rest, <<>>)
+          {{:header, :literal, version, type, parsed}, remaining}
 
-  def adjacent({x, y}, risk_map) do
-    current = Map.get(risk_map, {x, y})
-    [
-      {x - 1, y},
-      {x + 1, y},
-      {x, y - 1},
-      {x, y + 1},
-    ]
-    |> Enum.map(fn position ->
-      case Map.get(risk_map, position) do
-        nil -> nil
-        adj -> position
+        {_, _} ->
+          {parsed, remaining} = operator(rest)
+          {{:header, :operator, version, type, parsed}, remaining}
       end
-    end)
-    |> Enum.reject(&is_nil/1)
+  rescue
+    error ->
+      :end
   end
 
+  def header(input) do
+    input
+  end
+
+  def literal_value(<<1::1, number::4, rest::bitstring>>, acc) do
+    literal_value(rest, <<acc::bitstring, number::4>>)
+  end
+
+  def literal_value(<<0::1, number::4, rest::bitstring>>, acc) do
+    val = <<acc::bitstring, number::4>>
+    val_size = bit_size(val)
+    <<num::integer-size(val_size)>> = val
+    {{:literal, num}, rest}
+  end
+
+  def operator(<<1::1, number::11, rest::bitstring>>) do
+    {{:literal, number}, rest}
+  end
+
+  def operator(<<0::1, len::15, subpackets::bitstring-size(len), rest::bitstring>>) do
+    {{:length, len, parse(subpackets)}, rest}
+  end
+
+  def operator(_), do: :end
 end

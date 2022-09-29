@@ -1,89 +1,100 @@
-defmodule Day14Test do
+defmodule Day15Test do
   use ExUnit.Case
 
   test "example" do
-    assert 1588 ==
-             File.read!("input/14.example.txt")
+    assert 0 ==
+             File.read!("input/15.example.txt")
              |> parse_input()
-             |> step()
-             |> solve()
+             |> shortest_path()
   end
 
-  test "day 14 - part 1" do
+  test "day 15 - part 1" do
     assert 0 ==
-             File.read!("input/14.txt")
+             File.read!("input/15.txt")
              |> parse_input()
-             |> step()
-             |> solve()
   end
 
   test "example 2" do
-    assert 2188189693529 ==
-             File.read!("input/14.example.txt")
+    assert 0 ==
+             File.read!("input/15.example.txt")
              |> parse_input()
-             |> step(40)
-             |> solve()
   end
 
-  test "day 14 - part 2" do
-   assert 0 ==
-             File.read!("input/14.txt")
+  test "day 15 - part 2" do
+    assert 0 ==
+             File.read!("input/15.txt")
              |> parse_input()
   end
 
   @doc """
-
+  returns a map of all locations in an N x N square
+  Top row is {0, 0}, {1, 0} ...
+  Bottom row is {N, 0}, {N, 1}, ..., {N, N}
+  %{
+    {x, y} => risk_level
+  }
   """
   def parse_input(input) do
-    [polymer_template_str, insertion_rules_str] = String.split(input, "\n\n", trim: true)
-    {polymer_template(polymer_template_str), insertion_rules(insertion_rules_str)}
-  end
-
-  def polymer_template(str) do
-    String.graphemes(str)
-  end
-
-  def insertion_rules(str) do
-    str
+    input
     |> String.split("\n", trim: true)
-    |> Enum.reduce(
-         %{},
-         fn rule, rule_map ->
-           [input, output] = String.split(rule, " -> ", trim: true)
-           Map.put(rule_map, String.graphemes(input), output)
-         end
-       )
+    |> Enum.with_index()
+    |> Enum.flat_map(fn {row, y} ->
+      row
+      |> String.graphemes()
+      |> Enum.map(&String.to_integer/1)
+      |> Enum.with_index()
+      |> Enum.map(fn {risk_level, x} -> {{x, y}, %{risk_level: risk_level}} end)
+    end)
+    |> Map.new()
   end
 
-  def step(result, 0), do: result
+  @root {0, 0}
 
-  def step({template, rules}, steps \\ 10) do
-    #IO.inspect(steps)
-    IO.inspect(solve({template, rules}))
-    new_template = template
-    |> Enum.chunk_every(2,1, [])
+  def shortest_path(risk_map, target) do
+    unvisited = risk_map
+
+    risk_map
     |> Enum.map(fn
-      [a, b] = rule ->
-        [a, Map.get(rules, rule), b]
-      [a] -> [a]
+      {@root, _} -> {@root, %{risk_level: 0, distance: 0}}
+      {position, risk} -> {position, %{risk, distance: :infinity}}
     end)
-    |> Enum.reduce([], fn
-      [a, b, c], acc ->
-        acc ++ [a, b]
-      [a], acc ->
-        acc ++ [a]
-    end)
-    |> List.flatten()
+    |> Map.new()
 
-    step({new_template, rules}, steps - 1)
+    visited = Map.take(unvisited, @root)
+    unvisited = Map.drop(unvisited, @root)
+
+    max_x =
+      risk_map
+      |> Enum.map(fn {{x, _}, _} -> x end)
+      |> Enum.max()
+
+    max_y =
+      risk_map
+      |> Enum.map(fn {{_, y}, _} -> y end)
+      |> Enum.max()
+
+    do_shortest_path(visited, unvisited, {max_x, max_y})
   end
 
-  def solve({template, rules}) do
-    {{_, min}, {_, max}} = template
-    |> Enum.frequencies()
-    |> Enum.min_max_by(fn {k, v} -> v end)
-
-    max - min
+  def do_shortest_path(visited, to_visit, to_find) do
+    Enum.min_by()
   end
 
+  def adjacent({x, y}, risk_map) do
+    current = Map.get(risk_map, {x, y})
+
+    [
+      {x - 1, y},
+      {x + 1, y},
+      {x, y - 1},
+      {x, y + 1}
+    ]
+    |> Enum.map(fn position ->
+      case Map.get(risk_map, position) do
+        nil -> nil
+        adj -> position
+      end
+    end)
+    |> Enum.reject(&is_nil/1)
+  end
 end
