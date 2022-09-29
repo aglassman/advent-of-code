@@ -1,5 +1,4 @@
 defmodule IntCodeComputer do
-
   def new(code, input \\ [])
 
   def new(str_code, input) when is_binary(str_code) do
@@ -9,7 +8,8 @@ defmodule IntCodeComputer do
   end
 
   def new(codes, input) do
-    for {code_str, index} <- Enum.with_index(codes), into: %{input: input, output: [], ip: 0} do
+    base = %{name: nil, on_halt: nil, input: input, output: [], ip: 0}
+    for {code_str, index} <- Enum.with_index(codes), into: base do
       {index, String.to_integer(code_str)}
     end
   end
@@ -67,9 +67,24 @@ defmodule IntCodeComputer do
     [:equals | to_opcodes(opcode_str, 3)]
   end
 
+  def fetch_input(%{name: name, input: []} = state) do
+    IO.inspect("program: #{name}, pid: #{inspect(self())} waiting for input")
+    receive do
+        input ->
+          IO.inspect("pid: #{inspect(self())} received #{input}")
+          {input, state}
+    end
+  end
+
   def fetch_input(state) do
     {[input | _], state} = Map.get_and_update(state, :input, fn input -> {input, tl(input)} end)
     {input, state}
+  end
+
+  def output(%{output_pid: pid, name: name} = state, output) do
+    IO.inspect("program: #{name}, pid: #{inspect(pid)} sending #{output}")
+    send(pid, output)
+    Map.update(state, :output, [], fn outputs -> [output | outputs] end)
   end
 
   def output(state, output) do
@@ -93,13 +108,32 @@ defmodule IntCodeComputer do
   def inc_ip(state, {:set, i}), do: %{state | ip: i}
   def inc_ip(state, i), do: %{state | ip: state[:ip] + i}
 
+  def wait_for_link(state) do
+    receive do
+      {:link, %{name: name}, output_pid} ->
+        IO.inspect("#{state.name} will output to #{name} ")
+        state
+        |> Map.put(:output_pid, output_pid)
+        |> execute()
+    end
+  end
+
   def execute(state) do
     state
     |> next_instruction()
     |> execute(state)
   end
 
-  def execute(:halt, state), do: state
+  def execute(:halt, %{on_halt: nil} = state) do
+    IO.inspect("halting")
+    state
+  end
+
+  def execute(:halt, %{on_halt: pid} = state) do
+    IO.inspect("halting ?")
+    send(pid, {:halt, state})
+    state
+  end
 
   def execute([:add, o1, o2, _], state) do
     [p1, p2, location] = params(state, 3)
@@ -149,7 +183,13 @@ defmodule IntCodeComputer do
     b = lookup(state, p2, o2)
 
     state
-    |> inc_ip(if a != 0 do {:set, b} else 3 end)
+    |> inc_ip(
+      if a != 0 do
+        {:set, b}
+      else
+        3
+      end
+    )
     |> execute()
   end
 
@@ -159,7 +199,13 @@ defmodule IntCodeComputer do
     b = lookup(state, p2, o2)
 
     state
-    |> inc_ip(if a == 0 do {:set, b} else 3 end)
+    |> inc_ip(
+      if a == 0 do
+        {:set, b}
+      else
+        3
+      end
+    )
     |> execute()
   end
 
@@ -169,7 +215,14 @@ defmodule IntCodeComputer do
     b = lookup(state, p2, o2)
 
     state
-    |> Map.put(location, if a < b do 1 else 0 end)
+    |> Map.put(
+      location,
+      if a < b do
+        1
+      else
+        0
+      end
+    )
     |> inc_ip(4)
     |> execute()
   end
@@ -180,9 +233,15 @@ defmodule IntCodeComputer do
     b = lookup(state, p2, o2)
 
     state
-    |> Map.put(location, if a == b do 1 else 0 end)
+    |> Map.put(
+      location,
+      if a == b do
+        1
+      else
+        0
+      end
+    )
     |> inc_ip(4)
     |> execute()
   end
-
 end

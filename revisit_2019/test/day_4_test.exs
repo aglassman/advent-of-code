@@ -31,11 +31,21 @@ defmodule Day04Test do
 
   def at_least_two?(candidate) do
     case candidate do
-      [b,b,_,_,_,_] -> true
-      [_,b,b,_,_,_] -> true
-      [_,_,b,b,_,_] -> true
-      [_,_,_,b,b,_] -> true
-      [_,_,_,_,b,b] -> true
+      [b, b, _, _, _, _] ->
+        true
+
+      [_, b, b, _, _, _] ->
+        true
+
+      [_, _, b, b, _, _] ->
+        true
+
+      [_, _, _, b, b, _] ->
+        true
+
+      [_, _, _, _, b, b] ->
+        true
+
       _ ->
         false
     end
@@ -43,11 +53,21 @@ defmodule Day04Test do
 
   def exactly_two?(candidate) do
     case candidate do
-      [b,b,c,_,_,_] when b != c -> true
-      [a,b,b,c,_,_] when a != b and b != c -> true
-      [_,a,b,b,c,_] when a != b and b != c -> true
-      [_,_,a,b,b,c] when a != b and b != c -> true
-      [_,_,_,a,b,b] when a != b -> true
+      [b, b, c, _, _, _] when b != c ->
+        true
+
+      [a, b, b, c, _, _] when a != b and b != c ->
+        true
+
+      [_, a, b, b, c, _] when a != b and b != c ->
+        true
+
+      [_, _, a, b, b, c] when a != b and b != c ->
+        true
+
+      [_, _, _, a, b, b] when a != b ->
+        true
+
       _ ->
         false
     end
