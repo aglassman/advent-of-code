@@ -13,7 +13,6 @@ defmodule Day07Test do
           d <- 0..4,
           e <- 0..4,
           [a, b, c, d, e] |> Enum.uniq() |> length() == 5 do
-
         prog_a = %{program | name: "a", input: [a, 0]}
         prog_b = %{program | name: "b", input: [b]}
         prog_c = %{program | name: "c", input: [c]}
@@ -36,7 +35,6 @@ defmodule Day07Test do
           {:halt, %{output: [output | _]}} ->
             output
         end
-
       end
 
     answer = Enum.max(trials)
@@ -45,8 +43,10 @@ defmodule Day07Test do
   end
 
   test "part 2 example" do
-    program = new("3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5")
-    [a, b, c, d, e] = [9,8,7,6,5]
+    program =
+      new("3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5")
+
+    [a, b, c, d, e] = [9, 8, 7, 6, 5]
     prog_a = %{program | name: "a", input: [a, 0]}
     prog_b = %{program | name: "b", input: [b]}
     prog_c = %{program | name: "c", input: [c]}
@@ -65,13 +65,13 @@ defmodule Day07Test do
     send(pid_d, {:link, prog_c, pid_c})
     send(pid_e, {:link, prog_d, pid_d})
 
-    output = receive do
-      {:halt, %{output: [output | _]}} ->
-        output
-    end
+    output =
+      receive do
+        {:halt, %{output: [output | _]}} ->
+          output
+      end
 
-    assert 139629729 == output
-
+    assert 139_629_729 == output
   end
 
   test "part 2" do
@@ -84,30 +84,28 @@ defmodule Day07Test do
           d <- 5..9,
           e <- 5..9,
           [a, b, c, d, e] |> Enum.uniq() |> length() == 5 do
+        prog_a = %{program | name: "a", input: [a, 0]}
+        prog_b = %{program | name: "b", input: [b]}
+        prog_c = %{program | name: "c", input: [c]}
+        prog_d = %{program | name: "d", input: [d]}
+        prog_e = %{program | name: "e", on_halt: self(), input: [e]}
 
-          prog_a = %{program | name: "a", input: [a, 0]}
-          prog_b = %{program | name: "b", input: [b]}
-          prog_c = %{program | name: "c", input: [c]}
-          prog_d = %{program | name: "d", input: [d]}
-          prog_e = %{program | name: "e", on_halt: self(), input: [e]}
+        pid_a = spawn(fn -> wait_for_link(prog_a) end)
+        pid_b = spawn(fn -> wait_for_link(prog_b) end)
+        pid_c = spawn(fn -> wait_for_link(prog_c) end)
+        pid_d = spawn(fn -> wait_for_link(prog_d) end)
+        pid_e = spawn(fn -> wait_for_link(prog_e) end)
 
-          pid_a = spawn(fn -> wait_for_link(prog_a) end)
-          pid_b = spawn(fn -> wait_for_link(prog_b) end)
-          pid_c = spawn(fn -> wait_for_link(prog_c) end)
-          pid_d = spawn(fn -> wait_for_link(prog_d) end)
-          pid_e = spawn(fn -> wait_for_link(prog_e) end)
+        send(pid_a, {:link, prog_b, pid_b})
+        send(pid_b, {:link, prog_c, pid_c})
+        send(pid_c, {:link, prog_d, pid_d})
+        send(pid_d, {:link, prog_e, pid_e})
+        send(pid_e, {:link, prog_a, pid_a})
 
-          send(pid_a, {:link, prog_b, pid_b})
-          send(pid_b, {:link, prog_c, pid_c})
-          send(pid_c, {:link, prog_d, pid_d})
-          send(pid_d, {:link, prog_e, pid_e})
-          send(pid_e, {:link, prog_a, pid_a})
-
-          receive do
-            {:halt, %{output: [output | _]}} ->
-              output
-          end
-
+        receive do
+          {:halt, %{output: [output | _]}} ->
+            output
+        end
       end
 
     answer = Enum.max(trials)

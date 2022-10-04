@@ -8,7 +8,8 @@ defmodule IntCodeComputer do
   end
 
   def new(codes, input) do
-    base = %{name: nil, on_halt: nil, input: input, output: [], ip: 0}
+    base = %{name: nil, on_halt: nil, input: input, output: [], ip: 0, relative_base: 0}
+
     for {code_str, index} <- Enum.with_index(codes), into: base do
       {index, String.to_integer(code_str)}
     end
@@ -67,12 +68,17 @@ defmodule IntCodeComputer do
     [:equals | to_opcodes(opcode_str, 3)]
   end
 
+  def to_instruction(9, opcode_str) do
+    [:adjust_relative_base | to_opcodes(opcode_str, 1)]
+  end
+
   def fetch_input(%{name: name, input: []} = state) do
     IO.inspect("program: #{name}, pid: #{inspect(self())} waiting for input")
+
     receive do
-        input ->
-          IO.inspect("pid: #{inspect(self())} received #{input}")
-          {input, state}
+      input ->
+        IO.inspect("pid: #{inspect(self())} received #{input}")
+        {input, state}
     end
   end
 
@@ -98,11 +104,23 @@ defmodule IntCodeComputer do
   end
 
   def lookup(state, location, "0") do
-    Map.get(state, location)
+    Map.get(state, location, 0)
   end
 
   def lookup(_state, value, "1") do
     value
+  end
+
+  def location_lookup(%{relative_base: relative_base}, param, "2") do
+    relative_base + param
+  end
+
+  def location_lookup(_state, param, _) do
+    param
+  end
+
+  def lookup(%{relative_base: relative_base} = state, location, "2") do
+    Map.get(state, relative_base + location, 0)
   end
 
   def inc_ip(state, {:set, i}), do: %{state | ip: i}
@@ -112,6 +130,7 @@ defmodule IntCodeComputer do
     receive do
       {:link, %{name: name}, output_pid} ->
         IO.inspect("#{state.name} will output to #{name} ")
+
         state
         |> Map.put(:output_pid, output_pid)
         |> execute()
@@ -135,10 +154,11 @@ defmodule IntCodeComputer do
     state
   end
 
-  def execute([:add, o1, o2, _], state) do
-    [p1, p2, location] = params(state, 3)
+  def execute([:add, o1, o2, o3], state) do
+    [p1, p2, p3] = params(state, 3)
     a = lookup(state, p1, o1)
     b = lookup(state, p2, o2)
+    location = location_lookup(state, p3, o3)
 
     state
     |> Map.put(location, a + b)
@@ -146,10 +166,11 @@ defmodule IntCodeComputer do
     |> execute()
   end
 
-  def execute([:multiply, o1, o2, _], state) do
-    [p1, p2, location] = params(state, 3)
+  def execute([:multiply, o1, o2, o3], state) do
+    [p1, p2, p3] = params(state, 3)
     a = lookup(state, p1, o1)
     b = lookup(state, p2, o2)
+    location = location_lookup(state, p3, o3)
 
     state
     |> Map.put(location, a * b)
@@ -157,8 +178,9 @@ defmodule IntCodeComputer do
     |> execute()
   end
 
-  def execute([:input, _], state) do
-    [location] = params(state, 1)
+  def execute([:input, o1], state) do
+    [p1] = params(state, 1)
+    location = location_lookup(state, p1, o1)
     {input, state} = fetch_input(state)
 
     state
@@ -166,6 +188,7 @@ defmodule IntCodeComputer do
     |> inc_ip(2)
     |> execute()
   end
+
 
   def execute([:output, o1], state) do
     [p1] = params(state, 1)
@@ -209,10 +232,11 @@ defmodule IntCodeComputer do
     |> execute()
   end
 
-  def execute([:less_than, o1, o2, _], state) do
-    [p1, p2, location] = params(state, 3)
+  def execute([:less_than, o1, o2, o3], state) do
+    [p1, p2, p3] = params(state, 3)
     a = lookup(state, p1, o1)
     b = lookup(state, p2, o2)
+    location = location_lookup(state, p3, o3)
 
     state
     |> Map.put(
@@ -227,10 +251,11 @@ defmodule IntCodeComputer do
     |> execute()
   end
 
-  def execute([:equals, o1, o2, _], state) do
-    [p1, p2, location] = params(state, 3)
+  def execute([:equals, o1, o2, o3], state) do
+    [p1, p2, p3] = params(state, 3)
     a = lookup(state, p1, o1)
     b = lookup(state, p2, o2)
+    location = location_lookup(state, p3, o3)
 
     state
     |> Map.put(
@@ -242,6 +267,15 @@ defmodule IntCodeComputer do
       end
     )
     |> inc_ip(4)
+    |> execute()
+  end
+
+  def execute([:adjust_relative_base, o1], state) do
+    [p1] = params(state, 1)
+    val = lookup(state, p1, o1)
+    state
+    |> Map.update(:relative_base, 0, fn a -> a + val end)
+    |> inc_ip(2)
     |> execute()
   end
 end
