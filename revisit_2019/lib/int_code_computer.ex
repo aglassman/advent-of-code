@@ -73,11 +73,11 @@ defmodule IntCodeComputer do
   end
 
   def fetch_input(%{name: name, input: []} = state) do
-    IO.inspect("program: #{name}, pid: #{inspect(self())} waiting for input")
+    #IO.inspect("program: #{name}, pid: #{inspect(self())} waiting for input")
 
     receive do
       input ->
-        IO.inspect("pid: #{inspect(self())} received #{input}")
+        #IO.inspect("pid: #{inspect(self())} received #{input}")
         {input, state}
     end
   end
@@ -88,7 +88,7 @@ defmodule IntCodeComputer do
   end
 
   def output(%{output_pid: pid, name: name} = state, output) do
-    IO.inspect("program: #{name}, pid: #{inspect(pid)} sending #{output}")
+    #IO.inspect("program: #{name}, pid: #{inspect(pid)} sending #{output}")
     send(pid, output)
     Map.update(state, :output, [], fn outputs -> [output | outputs] end)
   end
@@ -129,7 +129,7 @@ defmodule IntCodeComputer do
   def wait_for_link(state) do
     receive do
       {:link, %{name: name}, output_pid} ->
-        IO.inspect("#{state.name} will output to #{name} ")
+        #IO.inspect("#{state.name} will output to #{name} ")
 
         state
         |> Map.put(:output_pid, output_pid)
