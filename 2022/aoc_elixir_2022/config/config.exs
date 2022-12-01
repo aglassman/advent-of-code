@@ -1,0 +1,2 @@
+import Config
+config :advent_of_code_utils, session: "53616c7465645f5f3d1caeb767ce44e0c4c5c7305d93d48ba469786dd1039f0c2a3730a7558f1a6b77fd504070903ca4be972bec3f965b54a73a0696c277a7f3"
