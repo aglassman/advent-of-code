@@ -28,7 +28,14 @@ aoc 2022, 2 do
   @loss 0
 
   def score_game({a, a}), do: @tie + points(a)
-  def score_game({a, b}), do: (if beats(a) == b do @loss else @win end) + points(b)
+
+  def score_game({a, b}),
+    do:
+      (if beats(a) == b do
+         @loss
+       else
+         @win
+       end) + points(b)
 
   def points(:rock), do: 1
   def points(:paper), do: 2
@@ -49,5 +56,4 @@ aoc 2022, 2 do
   def p2_map(a, "X"), do: beats(a)
   def p2_map(a, "Y"), do: a
   def p2_map(a, "Z"), do: beat_by(a)
-
 end
