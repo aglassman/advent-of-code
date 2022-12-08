@@ -2,8 +2,9 @@ import AOC
 
 aoc 2022, 8 do
   def p1(input) do
-    trees = parse(input)
-    visible_exterior_trees(trees) + visible_interior_trees(trees)
+    input
+    |> parse()
+    |> visible_trees()
   end
 
   def p2(input) do
@@ -13,15 +14,11 @@ aoc 2022, 8 do
     |> Enum.max()
   end
 
-  def visible_exterior_trees({x_size, y_size, _}) do
-    y_size * 2 + (x_size - 2) * 2
-  end
-
   @directions [{0, -1}, {0, 1}, {-1, 0}, {1, 0}]
 
-  def visible_interior_trees({x_size, y_size, grid}) do
-    for x <- 1..(x_size - 2),
-        y <- 1..(y_size - 2),
+  def visible_trees({x_size, y_size, grid}) do
+    for x <- 0..(x_size - 1),
+        y <- 0..(y_size - 1),
         Enum.any?(@directions, &vis?(grid[{x, y}], grid, {x, y}, &1)),
         reduce: 0 do
       acc ->
