@@ -20,19 +20,21 @@ aoc 2022, 8 do
   @directions [{0, -1}, {0, 1}, {-1, 0}, {1, 0}]
 
   def visible_interior_trees({x_size, y_size, grid}) do
-    visible_trees =
-      for x <- 1..(x_size - 2),
-          y <- 1..(y_size - 2),
-          Enum.any?(@directions, &vis?(grid[{x, y}], grid, {x, y}, &1)) do
-        {x, y}
-      end
-
-    length(visible_trees)
+    for x <- 1..(x_size - 2),
+        y <- 1..(y_size - 2),
+        Enum.any?(@directions, &vis?(grid[{x, y}], grid, {x, y}, &1)),
+        reduce: 0 do
+      acc ->
+        acc + 1
+    end
   end
 
   def scenic_distances({x_size, y_size, grid}) do
     for x <- 1..(x_size - 2), y <- 1..(y_size - 2) do
-      Enum.reduce(@directions, 1, &(dis(grid[{x, y}], grid, {x, y}, &1) * &2))
+      for dir <- @directions, reduce: 1 do
+        acc ->
+          acc * dis(grid[{x, y}], grid, {x, y}, dir)
+      end
     end
   end
 
