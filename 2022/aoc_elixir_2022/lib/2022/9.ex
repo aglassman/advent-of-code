@@ -5,18 +5,26 @@ defmodule Rope do
     rope = for _i <- 0..rope_length do
       {0, 0}
     end
-    %{rope: rope, head_path: [], tail_path: [], rope_length: rope_length}
+    %{rope: rope, head_path: [], tail_path: []}
   end
 
   def simulate_move({dx, dy}, [{hx, hy} | tail] = rope) do
-    {_, new_rope} = Enum.reduce([{hx + dx, hy + dy} | tail], {{hx + dx, hy + dy}, []}, fn tail, {head, acc} ->
+    new_head = {hx + dx, hy + dy}
+    {_, new_rope} = Enum.reduce([new_head | tail], {new_head, []}, fn tail, {head, acc} ->
       next = determine_tail(head, tail)
       {next, [next | acc]}
     end)
-    new_rope |> Enum.reverse() |> IO.inspect()
+    Enum.reverse(new_rope)
   end
 
   def determine_tail({a, a}, {a, a}), do: {a, a}
+
+  def determine_tail({hx, hy}, {tx, ty}) when abs(hx - tx) == 2 and abs(hy - ty) == 2 do
+    dx = if (hx - tx) > 0 do 1 else -1 end
+    dy = if (hy - ty) > 0 do 1 else -1 end
+    {tx + dx, ty + dy}
+  end
+
   def determine_tail({hx, hy}, {tx, ty}) when (hy - ty) == 2, do: {hx, hy - 1}
   def determine_tail({hx, hy}, {tx, ty}) when (hy - ty) == -2, do: {hx, hy + 1}
   def determine_tail({hx, hy}, {tx, ty}) when (hx - tx) == 2, do: {hx - 1, hy}
@@ -67,8 +75,6 @@ aoc 2022, 9 do
     |> Map.update(:head_path, [head], fn path -> [head | path] end)
     |> Map.update(:tail_path, [tail], fn path -> [tail | path] end)
 
-    # I think I need to consider the move as a whole, vs iterating over it.  This seems to have worked fine for
-    # part 1, but not part 2
     move({dir, dis - 1}, state)
   end
 
