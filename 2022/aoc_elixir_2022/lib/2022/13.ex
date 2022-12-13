@@ -13,24 +13,20 @@ aoc 2022, 13 do
         acc
       end
     end)
-
   end
 
-  def p2(input) do
-    dividers = [[[2]], [[6]]]
+  @dividers [[[2]], [[6]]]
 
+  def p2(input) do
     input
     |> parse()
     |> Enum.concat()
-    |> Enum.concat(dividers)
+    |> Enum.concat(@dividers)
     |> Enum.sort(&verify_order/2)
     |> Enum.with_index(1)
-    |> Enum.reduce(1, fn {packet, i}, acc ->
-      if packet in dividers do
-        acc * i
-      else
-        acc
-      end
+    |> Enum.reduce(1, fn
+      {packet, i}, acc when packet in @dividers -> acc * i
+      _, acc -> acc
     end)
   end
 
@@ -44,7 +40,7 @@ aoc 2022, 13 do
     verify_order([[a], b])
   end
 
-  def verify_order([a , b]) when is_integer(a) and is_integer(b) do
+  def verify_order([a, b]) when is_integer(a) and is_integer(b) do
     cond do
       a < b -> true
       a > b -> false
@@ -60,6 +56,7 @@ aoc 2022, 13 do
     case verify_order([a, b]) do
       :continue ->
         verify_order([at, bt])
+
       result ->
         result
     end
