@@ -1,82 +1,61 @@
 import AOC
 
-import String, only: [split: 2]
+import String, only: [split: 2, replace: 3]
+import Code, only: [eval_string: 1]
 
 aoc 2022, 14 do
   @sand_point {500, 0}
 
   def p1(input) do
-    input
+    result = input
     |> parse()
     |> drop_sand()
+
+    result - 1
   end
 
   def p2(input) do
     grid = parse(input)
 
-    max_y = grid
-    |> Enum.map(fn {{x, y}, _} -> y end)
-    |> Enum.max()
-
+    {{_, max_y}, _} = Enum.max_by(grid, fn {{x, y}, _} -> y end)
     max_y = max_y + 2
 
-    grid = for x <- -1000..1000, reduce: grid do
-      grid ->
-        Map.put(grid, {x, max_y}, "#")
-    end
-
-    drop_sand(grid) + 1
+    grid
+    |> draw_line([{-1000, max_y}, {1000, max_y}])
+    |> drop_sand()
   end
+
+  def drop_sand(:halt, dropped), do: dropped
 
   def drop_sand(grid, dropped \\ 0) do
-
-    case simulate(grid, @sand_point) do
-      :halt ->
-        dropped
-      grid ->
-        drop_sand(grid, dropped + 1)
-    end
+    grid
+    |> simulate(@sand_point)
+    |> drop_sand(dropped + 1)
   end
 
-  def simulate(grid, {_, 1000}), do: :halt
-
   def simulate(grid, {x, y} = p) do
-    next = case grid[{x, y + 1}] do
-      nil ->
-        {x, y + 1}
-
-      _ ->
-        cond do
-          grid[{x - 1, y + 1}] == nil -> {x - 1, y + 1}
-          grid[{x + 1, y + 1}] == nil -> {x + 1, y + 1}
-          true ->
-            :halt
-        end
-    end
-
-    case next do
-      :halt ->
-        if @sand_point == {x, y} do
-          :halt
-        else
-          Map.put(grid, {x, y}, "o")
-        end
-      next ->
-        simulate(grid, next)
+   cond do
+      y > 1000 -> :halt
+      grid[{x, y + 1}] == nil -> simulate(grid, {x, y + 1})
+      grid[{x - 1, y + 1}] == nil -> simulate(grid, {x - 1, y + 1})
+      grid[{x + 1, y + 1}] == nil -> simulate(grid, {x + 1, y + 1})
+      @sand_point == p -> :halt
+      true ->
+        Map.put(grid, p, "#")
     end
   end
 
   def parse(input) do
     input
-    |> String.split("\n")
+    |> split("\n")
     |> Enum.map(&parse_line/1)
     |> to_grid()
   end
 
   def parse_line(line) do
     "[{#{line}}]"
-    |> String.replace(" -> ", "},{")
-    |> Code.eval_string()
+    |> replace(" -> ", "},{")
+    |> eval_string()
     |> elem(0)
   end
 
@@ -84,23 +63,22 @@ aoc 2022, 14 do
     Enum.reduce(rocks, %{}, fn line, grid ->
       line
       |> Enum.chunk_every(2, 1, :discard)
-      |> Enum.reduce(grid, &draw_line/2)
+      |> Enum.reduce(grid, &draw_line(&2, &1))
     end)
   end
 
-  def draw_line([{x, y} = a,{x, y}], grid) do
+  def draw_line(grid, [{x, y} = a,{x, y}]) do
     Map.put(grid, a, "#")
   end
 
-  def draw_line([{x1, y1} = a, {x2, y2}], grid) do
-    grid = Map.put(grid, a, "#")
-    dx = direction(x1, x2)
-    dy = direction(y1, y2)
-    draw_line([{x1 + dx, y1 + dy}, {x2, y2}], grid)
+  def draw_line(grid, [{x1, y1} = a, {x2, y2} = b]) do
+    grid
+    |> Map.put(a, "#")
+    |> draw_line([{x1 + d(x1, x2), y1 + d(y1, y2)}, b])
   end
 
-  def direction(a, a), do: 0
-  def direction(a, b) when a < b, do: 1
-  def direction(a, b) when a > b, do: -1
+  def d(a, a), do: 0
+  def d(a, b) when a < b, do: 1
+  def d(a, b) when a > b, do: -1
 
 end
