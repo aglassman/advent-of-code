@@ -2,6 +2,19 @@ import AOC
 
 aoc 2023, 1 do
 
+  def p1(input) do
+    input
+    |> String.split("\n")
+    |> identify_and_sum()
+  end
+
+  def p2(input) do
+    input
+    |> String.split("\n")
+    |> Enum.map(&replace/1)
+    |> identify_and_sum()
+  end
+
   def is_int(val) do
     case Integer.parse(val) do
       {int, _} -> true
@@ -18,19 +31,6 @@ aoc 2023, 1 do
       {int, _} = Integer.parse(first <> last)
       sum + int
     end)
-  end
-
-  def p1(input) do
-    input
-    |> String.split("\n")
-    |> identify_and_sum()
-  end
-
-  def p2(input) do
-    input
-    |> String.split("\n")
-    |> Enum.map(&replace/1)
-    |> identify_and_sum()
   end
 
   @replacements %{"one" => "1", "two" => "2", "three" => "3", "four" => "4", "five" => "5", "six" => "6", "seven" => "7", "eight" => "8", "nine" => "9"}
