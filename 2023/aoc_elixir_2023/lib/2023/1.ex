@@ -1,7 +1,6 @@
 import AOC
 
 aoc 2023, 1 do
-
   def p1(input) do
     input
     |> String.split("\n")
@@ -33,7 +32,17 @@ aoc 2023, 1 do
     end)
   end
 
-  @replacements %{"one" => "1", "two" => "2", "three" => "3", "four" => "4", "five" => "5", "six" => "6", "seven" => "7", "eight" => "8", "nine" => "9"}
+  @replacements %{
+    "one" => "1",
+    "two" => "2",
+    "three" => "3",
+    "four" => "4",
+    "five" => "5",
+    "six" => "6",
+    "seven" => "7",
+    "eight" => "8",
+    "nine" => "9"
+  }
   @regex ~r/one|two|three|four|five|six|seven|eight|nine/
 
   def replace(line) do
