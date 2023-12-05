@@ -1,5 +1,6 @@
 import Config
 
+config :iex, inspect: [charlists: :as_lists]
 config :advent_of_code_utils,
   gen_tests?: true,
   session:
