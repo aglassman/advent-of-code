@@ -28,11 +28,9 @@ aoc 2023, 6 do
   def count_wins(time, record) do
     for hold <- 1..(time - 1), reduce: 0 do
       win_options ->
-        distance = (time - hold) * hold
-        if distance > record do
-          win_options +  1
-        else
-          win_options
+        case (time - hold) * hold do
+          x when x > record -> win_options + 1
+          _ -> win_options
         end
     end
   end
