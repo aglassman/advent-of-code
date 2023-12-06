@@ -41,11 +41,11 @@ aoc 2023, 6 do
       iex> p1(example_input())
   """
   def p1(input) do
-    for {time, record} <- Enum.zip(parse_1(input)), reduce: 1 do
-      product ->
-        count_wins(time, record) * product
-    end
-
+    input
+    |> parse_1()
+    |> Enum.zip()
+    |> Enum.map(fn {time, record} -> count_wins(time, record) end)
+    |> Enum.product()
   end
 
   @doc """
