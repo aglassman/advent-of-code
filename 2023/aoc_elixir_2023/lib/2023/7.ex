@@ -25,86 +25,11 @@ aoc 2023, 7 do
     |> Enum.map(&Map.get(strength_map, &1))
   end
 
-  def sorted_hand_rank([2, 2, 2, 2, 2], :jacks_wild), do: 6
-
-  def sorted_hand_rank(hand, :jacks_wild) do
-    if 2 in hand do
-      {wild_value, count} = hand
-      |> Enum.reject(fn card -> card == 2 end)
-      |> Enum.frequencies()
-      |> Enum.max_by(fn {card, count} -> {count, card} end)
-
-      wild_hand = hand
-      |> Enum.map(fn card ->
-        if card == 2 do
-          wild_value
-        else
-          card
-        end
-      end)
-      |> Enum.sort(:desc)
-
-      case sorted_hand_rank(wild_hand, nil) do
-        0 -> 1
-        x -> x
-      end
-
-    else
-      sorted_hand_rank(hand, nil)
-    end
-  end
-
-  def sorted_hand_rank(hand, _) do
-    case hand do
-      # five of a kind
-      [a, a, a, a, a] -> 6
-
-      # four of a kind
-      [_, a, a, a, a] -> 5
-      [a, a, a, a, _] -> 5
-
-      # full house
-      [a, a, a, b, b] -> 4
-      [a, a, b, b, b] -> 4
-
-      # three of a kind
-      [a, a, a, b, c] -> 3
-      [a, b, b, b, c] -> 3
-      [a, b, c, c, c] -> 3
-
-      # two pair
-      [a, a, b, b, _] -> 2
-      [a, a, _, b, b] -> 2
-      [_, a, a, b, b] -> 2
-
-      # one pair
-      [a, a, _, _, _] -> 1
-      [_, a, a, _, _] -> 1
-      [_, _, a, a, _] -> 1
-      [_, _, _, a, a] -> 1
-
-      # high card
-      _ -> 0
-    end
-  end
-
-  def compare_tie([a | ta], [a | tb]), do: compare_tie(ta, tb)
-  def compare_tie([a | _], [b | _]), do: a >= b
-
-  def compare_hands({raw_a, hand_a, sorted_hand_a, _} = a, {raw_b, hand_b, sorted_hand_b, _} = b, game \\ nil) do
-    rank_a = sorted_hand_rank(sorted_hand_a, game)
-    rank_b = sorted_hand_rank(sorted_hand_b, game)
-
-    cond do
-      rank_a > rank_b ->
-        true
-      rank_a == rank_b ->
-        tb = compare_tie(hand_a, hand_b)
-        IO.inspect([raw_a, raw_b, a, b, rank_a, rank_b, tb], charlists: :as_string)
-        tb
-
-      true -> false
-    end
+  def total_winnings(hands) do
+    hands
+    |> Enum.sort_by(fn {order, _} -> order end)
+    |> Enum.with_index(1)
+    |> Enum.reduce(0, fn {{_, bid}, rank}, total -> total + (rank * bid) end)
   end
 
   @doc """
@@ -113,10 +38,11 @@ aoc 2023, 7 do
   def p1(input) do
     input
     |> parse()
-    |> Enum.sort(&compare_hands/2)
-    |> Enum.reverse()
-    |> Enum.with_index(1)
-    |> Enum.reduce(0, fn {{_, _, _, bid}, rank}, total -> total + (rank * bid) end)
+    |> Enum.map(fn {_, hand, sorted, bid} ->
+      sorted_freq = hand |> Enum.frequencies() |> Map.values() |> Enum.sort(:desc)
+      {{sorted_freq, hand}, bid}
+    end)
+    |> total_winnings()
   end
 
   @doc """
@@ -125,9 +51,22 @@ aoc 2023, 7 do
   def p2(input) do
     input
     |> parse(@strength_jacks_wild)
-    |> Enum.sort(&compare_hands(&1, &2, :jacks_wild))
-    |> Enum.reverse()
-    |> Enum.with_index(1)
-    |> Enum.reduce(0, fn {{_, _, _, bid}, rank}, total -> total + (rank * bid) end)
+    |> Enum.map(fn {_, hand, sorted, bid} ->
+      freq = case Enum.frequencies(hand) do
+        %{2 => 5} = freq ->
+          freq
+
+        %{2 => wild_count} = freq ->
+          sans_2 = freq |> Map.delete(2)
+          {max_key, max_val} = Enum.max_by(sans_2, fn {k, v} -> {v, k} end)
+          Map.put(sans_2, max_key, max_val + wild_count)
+
+        freq ->
+          freq
+      end
+      sorted_freq = freq |> Map.values() |> Enum.sort(:desc)
+      {{sorted_freq, hand}, bid}
+    end)
+    |> total_winnings()
   end
 end
