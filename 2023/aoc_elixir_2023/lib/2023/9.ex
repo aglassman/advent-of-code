@@ -24,10 +24,6 @@ aoc 2023, 9 do
     predict(decomp, seq_end + diff)
   end
 
-  def diff([_], diffs), do: diffs
-
-  def diff([a, b | rem], diffs), do: diff([b | rem], [b - a | diffs])
-
   @doc """
       iex> p1(example_input())
   """
