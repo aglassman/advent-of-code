@@ -20,8 +20,7 @@ aoc 2023, 9 do
   def predict([], diff), do: diff
 
   def predict([sequence | decomp], diff) do
-    [seq_end] = Enum.take(sequence, -1)
-    predict(decomp, seq_end + diff)
+    predict(decomp, List.last(sequence) + diff)
   end
 
   @doc """
