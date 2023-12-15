@@ -84,10 +84,47 @@ aoc 2023, 10 do
     length(find_loop(map_details, start, start, [])) / 2
   end
 
+  def p2(input) do
+    {map, width, height} = map_details = to_map(input)
+
+    start = {1, 1}
+
+    loop_map = MapSet.new(find_loop(map_details, start, start, []))
+
+    enter_loop_pipes = ~w(| - F L)
+    exit_loop_pipes = ~w(| 7 J)
+
+    for y <- 0..(height - 1), x <- 0..(width - 1), reduce: {0, :outside} do
+      {outside_count, :outside} ->
+        loc = loc(map, {x, y})
+        loc_part_of_loop? = MapSet.member?(loop_map, {x, y})
+        acc = cond do
+          loc_part_of_loop? and loc in enter_loop_pipes -> {outside_count, :inside}
+          true -> {outside_count, :outside}
+        end
+        IO.inspect([{x, y}, loc, loc_part_of_loop?, acc], label: :outside)
+        acc
+
+      {outside_count, :inside} ->
+        loc = loc(map, {x, y})
+        loc_n = loc(map, {x, y + 1})
+        loc_part_of_loop? = MapSet.member?(loop_map, {x, y})
+        acc = cond do
+          loc_part_of_loop? and loc in exit_loop_pipes -> {outside_count, :outside}
+          loc_part_of_loop? and !MapSet.member?(loop_map, loc_n) -> {outside_count, :inside}
+          true -> {outside_count + 1, :inside}
+        end
+        IO.inspect([{x, y}, loc, loc_part_of_loop?, acc], label: :inside)
+        acc
+
+    end
+
+  end
+
   @doc """
       iex> p2(example_input())
   """
-  def p2(input) do
+  def p2b(input) do
     {map, width, height} = map_details = to_map(input)
 
     start = for x <- 0..(width - 1), y <- 0..(height - 1), reduce: nil do
