@@ -12,10 +12,7 @@ aoc 2023, 15 do
   def hash([], current_value), do: current_value
 
   def hash([h | t], current_value) do
-    current_value = current_value + h
-    current_value = current_value * 17
-    current_value = rem(current_value, 256)
-    hash(t, current_value)
+    hash(t, rem((current_value + h) * 17, 256))
   end
 
   def operation("-", label, lenses) do
@@ -35,10 +32,16 @@ aoc 2023, 15 do
     end
   end
 
+  def focusing_power({{label, focal_length}, slot}, box) do
+    (1 + box) * slot * focal_length
+  end
+
   def focusing_power({box, lenses}) do
-    for {{label, focal_length}, slot} <- lenses |> Enum.reverse() |> Enum.with_index(1), reduce: 0 do
-      total -> total + ((1 + box) * slot * focal_length)
-    end
+    lenses
+    |> Enum.reverse()
+    |> Enum.with_index(1)
+    |> Enum.map(&focusing_power(&1, box))
+    |> Enum.sum()
   end
 
   @doc """
@@ -75,8 +78,7 @@ aoc 2023, 15 do
           [],
           &operation("-", String.to_atom(label), &1))
     end)
-    |> Enum.reduce(0, fn {box, lenses}, total ->
-        total + focusing_power({box, lenses})
-    end)
+    |> Enum.map(&focusing_power/1)
+    |> Enum.sum()
   end
 end
