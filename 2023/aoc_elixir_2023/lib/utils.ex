@@ -15,6 +15,17 @@ defmodule AocUtils do
     {map, width, height}
   end
 
+  def int_grid(input) do
+    map = input
+          |> String.split("\n")
+          |> Enum.map(&String.graphemes/1)
+          |> Enum.map(fn x -> Enum.map(x, &String.to_integer/1) end)
+    [row | _] = map
+    width = length(row)
+    height = length(map)
+    {map, width, height}
+  end
+
   @doc """
   Returns the grapheme at the given {x, y} coordinate in the grid.
   """
