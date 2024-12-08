@@ -16,9 +16,7 @@ aoc 2024, 7 do
   def valid?([final, final]), do: 1
   def valid?([_, _]), do: 0
   def valid?([final, a,  b | tail]) do
-    valid?([final, a + b | tail])
-      + valid?([final, a * b | tail])
-      + valid?([final, String.to_integer("#{a}#{b}") | tail]) # Part 2 only
+    valid?([final, a + b | tail]) + valid?([final, a * b | tail]) + valid?([final, String.to_integer("#{a}#{b}") | tail]) # Part 2 only
   end
 
   def calc(valid_counts) do
